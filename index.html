@@ -778,6 +778,248 @@ body {
 .ayah-bangla { font-size:var(--fs-bn,0.9rem); line-height:2; color:var(--text-bn); font-family:var(--font-bn); text-align:center; }
 
 /* ═══════════════════════════════════════════════
+   TAFSIR SECTION
+═══════════════════════════════════════════════ */
+.tafsir-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.tafsir-btn {
+  background: none;
+  border: 1px solid rgba(184,145,42,.22);
+  border-radius: 20px;
+  color: var(--gold-dim);
+  cursor: pointer;
+  padding: 6px 18px;
+  font-size: .72rem;
+  font-family: var(--font-bn);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all .2s var(--ease);
+  letter-spacing: .03em;
+}
+.tafsir-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold-l);
+  background: rgba(184,145,42,.06);
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+.tafsir-btn.open {
+  border-color: var(--gold);
+  color: var(--gold-l);
+  background: rgba(184,145,42,.08);
+}
+.tafsir-btn .tf-icon { font-size:.75rem; }
+.tafsir-btn .tf-arrow {
+  font-size: .55rem;
+  transition: transform .22s var(--ease);
+  opacity: .7;
+}
+.tafsir-btn.open .tf-arrow { transform: rotate(180deg); }
+
+/* Tafsir expand box */
+.tafsir-box {
+  display: none;
+  margin-top: 16px;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  animation: tafsirSlideDown .3s var(--ease);
+}
+.tafsir-box.show { display: block; }
+
+@keyframes tafsirSlideDown {
+  from { opacity:0; transform:translateY(-8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* Top header bar of tafsir */
+.tafsir-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, rgba(184,145,42,.12), rgba(184,145,42,.06));
+  border: 1px solid var(--border-gld);
+  border-bottom: none;
+  border-radius: var(--r-md) var(--r-md) 0 0;
+}
+.tafsir-head-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tafsir-badge {
+  font-family: var(--font-deco);
+  font-size: .58rem;
+  color: #000;
+  background: var(--gold);
+  border-radius: 4px;
+  padding: 2px 8px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.tafsir-head-title {
+  font-family: var(--font-deco);
+  font-size: .62rem;
+  color: var(--gold-l);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* Source switcher tabs */
+.tafsir-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 3px;
+}
+.tafsir-tab {
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-m);
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: .65rem;
+  font-family: var(--font-bn);
+  transition: all .15s;
+  white-space: nowrap;
+}
+.tafsir-tab.active {
+  background: var(--gold);
+  color: #000;
+  font-weight: 700;
+}
+.tafsir-tab:hover:not(.active) { color: var(--text-h); }
+
+/* Content area */
+.tafsir-content-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border-gld);
+  border-top: none;
+  border-radius: 0 0 var(--r-md) var(--r-md);
+  padding: 20px 22px 18px;
+  position: relative;
+}
+.tafsir-content-wrap::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 20px; right: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-gld), transparent);
+}
+
+/* Loading state */
+.tafsir-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 0;
+  color: var(--text-m);
+  font-size: .78rem;
+  font-family: var(--font-bn);
+}
+.tafsir-spinner {
+  width: 16px; height: 16px;
+  border: 2px solid var(--border-md);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* Opening verse quote style */
+.tafsir-ayah-ref {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.tafsir-ayah-ref::before {
+  content: '';
+  width: 3px;
+  height: 28px;
+  background: linear-gradient(180deg, var(--gold), var(--gold-dim));
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.tafsir-ayah-ref span {
+  font-size: .68rem;
+  color: var(--gold-dim);
+  font-family: var(--font-deco);
+  letter-spacing: .1em;
+}
+
+/* Main tafsir text */
+.tafsir-text {
+  font-size: .88rem;
+  line-height: 2.1;
+  color: var(--text-bn);
+  font-family: var(--font-bn);
+  text-align: justify;
+}
+.tafsir-text p {
+  margin-bottom: 12px;
+  padding-left: 0;
+}
+.tafsir-text p:last-child { margin-bottom: 0; }
+
+/* First paragraph gets a drop-cap feel */
+.tafsir-text p:first-child::first-letter {
+  font-size: 1.6em;
+  font-family: var(--font-disp);
+  color: var(--gold-l);
+  float: left;
+  line-height: 1;
+  margin-right: 4px;
+  margin-top: 3px;
+}
+
+/* Source credit footer */
+.tafsir-source {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: .6rem;
+  color: var(--text-m);
+  font-family: var(--font-deco);
+  letter-spacing: .08em;
+}
+.tafsir-source::before {
+  content: '—';
+  opacity: .4;
+}
+
+.tafsir-error {
+  text-align: center;
+  color: var(--text-m);
+  font-size: .8rem;
+  padding: 18px 0;
+  font-family: var(--font-bn);
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .tafsir-content-wrap { padding: 14px 14px 14px; }
+  .tafsir-text { font-size: .83rem; }
+  .tafsir-head { padding: 8px 12px; flex-wrap: wrap; gap: 8px; }
+}
+
+/* ═══════════════════════════════════════════════
    AUDIO PLAYER
 ═══════════════════════════════════════════════ */
 .audio-bar {
@@ -1802,6 +2044,28 @@ function renderAyahs(s){
         <div class="ayah-arabic">${a.ar}</div>
         <div class="ayah-divider"><span class="div-label">বাংলা অনুবাদ — আবু বকর যাকারিয়া</span></div>
         <div class="ayah-bangla" style="display:${ST.showTr?'block':'none'}">${a.bn}</div>
+        <div class="tafsir-row">
+          <button class="tafsir-btn" id="tfbtn${s.n}_${a.num}" onclick="toggleTafsir(${s.n},${a.num})">
+            <span class="tf-icon">📖</span>
+            তাফসীর
+            <span class="tf-arrow">▼</span>
+          </button>
+        </div>
+        <div class="tafsir-box" id="tfbox${s.n}_${a.num}">
+          <div class="tafsir-head">
+            <div class="tafsir-head-left">
+              <span class="tafsir-badge">TAFSIR</span>
+              <span class="tafsir-head-title">বাংলা তাফসীর</span>
+            </div>
+            <div class="tafsir-tabs" id="tftabs${s.n}_${a.num}">
+              <button class="tafsir-tab active" onclick="switchTafsir(${s.n},${a.num},164,this)">ইবনে কাসীর</button>
+              <button class="tafsir-tab" onclick="switchTafsir(${s.n},${a.num},165,this)">আহসানুল বায়ান</button>
+            </div>
+          </div>
+          <div class="tafsir-content-wrap">
+            <div id="tfcontent${s.n}_${a.num}"></div>
+          </div>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -2038,6 +2302,93 @@ function showLRBadge(){
 function showToast(msg){
   const t=document.getElementById('toastEl');t.textContent=msg;t.style.display='block';
   clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2500);
+}
+
+// ════════════════════════════════════════════
+// TAFSIR
+// ════════════════════════════════════════════
+const tafsirCache = {};
+const TAFSIR_NAMES = {
+  164: { name:'তাফসীর ইবনে কাসীর', author:'ইমাম ইসমাঈল ইবনে কাসীর (রহ.)' },
+  165: { name:'তাফসীর আহসানুল বায়ান', author:'শাইখ সালেহ আল-ফাউযান' }
+};
+
+function toggleTafsir(sn, an) {
+  const btn = document.getElementById(`tfbtn${sn}_${an}`);
+  const box = document.getElementById(`tfbox${sn}_${an}`);
+  const isOpen = box.classList.contains('show');
+  if (isOpen) {
+    box.classList.remove('show');
+    btn.classList.remove('open');
+  } else {
+    box.classList.add('show');
+    btn.classList.add('open');
+    // Load default (164) if not yet loaded
+    const content = document.getElementById(`tfcontent${sn}_${an}`);
+    if (!content.innerHTML.trim()) loadTafsir(sn, an, 164);
+  }
+}
+
+function switchTafsir(sn, an, tfId, tabEl) {
+  // Update active tab
+  const tabsWrap = document.getElementById(`tftabs${sn}_${an}`);
+  tabsWrap.querySelectorAll('.tafsir-tab').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+  loadTafsir(sn, an, tfId);
+}
+
+async function loadTafsir(sn, an, tfId) {
+  const contentEl = document.getElementById(`tfcontent${sn}_${an}`);
+  const cacheKey  = `${sn}:${an}:${tfId}`;
+  const meta = TAFSIR_NAMES[tfId];
+  const surah = SD.find(x => x.n === sn);
+
+  if (tafsirCache[cacheKey]) {
+    contentEl.innerHTML = tafsirCache[cacheKey];
+    return;
+  }
+
+  contentEl.innerHTML = `
+    <div class="tafsir-loading">
+      <div class="tafsir-spinner"></div>
+      <span>তাফসীর লোড হচ্ছে...</span>
+    </div>`;
+
+  try {
+    const url = `https://api.quran.com/api/v4/tafsirs/${tfId}/by_ayah/${sn}:${an}?language=bn`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    const raw = data?.tafsir?.text || data?.tafsirs?.[0]?.text || '';
+    if (!raw) throw new Error('empty');
+
+    // Clean HTML
+    const cleaned = raw
+      .replace(/<h\d[^>]*>.*?<\/h\d>/gi, '')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').replace(/&#\d+;/g, '')
+      .trim();
+
+    const paras = cleaned.split(/\n{2,}|\n/).filter(p => p.trim().length > 10);
+
+    const html = `
+      <div class="tafsir-ayah-ref">
+        <span>${surah ? surah.bn : 'সূরা'} — আয়াত ${bn(an)}</span>
+      </div>
+      <div class="tafsir-text">
+        ${paras.map(p => `<p>${p.trim()}</p>`).join('')}
+      </div>
+      <div class="tafsir-source">${meta.author}</div>`;
+
+    tafsirCache[cacheKey] = html;
+    contentEl.innerHTML = html;
+
+  } catch (e) {
+    contentEl.innerHTML = `<div class="tafsir-error">⚠️ তাফসীর লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করুন।</div>`;
+  }
 }
 
 function bn(n){return String(n).replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]);}
