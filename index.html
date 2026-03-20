@@ -883,13 +883,40 @@ body {
 ═══════════════════════════════════════════════ */
 .np-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); z-index:800; display:none; align-items:center; justify-content:center; padding:20px; animation:fadeIn .22s var(--ease); }
 .np-overlay.show { display:flex; }
-.np-modal { background:var(--bg-surface); border:1px solid var(--border-gld); border-radius:22px; padding:34px 30px 0; max-width:580px; width:100%; text-align:center; position:relative; box-shadow:0 24px 80px rgba(0,0,0,.55),0 0 50px var(--gold-glow); overflow:hidden; animation:npSlideUp .28s var(--ease); }
+.np-modal { background:var(--bg-surface); border:1px solid var(--border-gld); border-radius:22px; padding:0 30px 0; max-width:580px; width:100%; text-align:center; position:relative; box-shadow:0 24px 80px rgba(0,0,0,.55),0 0 50px var(--gold-glow); overflow:hidden; animation:npSlideUp .28s var(--ease); }
 .np-modal::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(184,145,42,.08) 0%,transparent 65%); pointer-events:none; }
 .np-modal::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold-l),transparent); }
-.np-hd-row { position:absolute; top:12px; left:14px; right:14px; display:flex; align-items:center; justify-content:space-between; z-index:3; }
-.np-hd-btn { background:var(--bg-card); border:1px solid var(--border-md); border-radius:8px; color:var(--text-m); height:28px; padding:0 10px; cursor:pointer; font-size:.72rem; display:flex; align-items:center; gap:5px; transition:all .15s; font-family:var(--font-bn); }
-.np-hd-btn:hover { color:var(--text-h); border-color:var(--border-gld); }
-.np-surah-info { font-size:.66rem; color:var(--gold-dim); text-transform:uppercase; letter-spacing:.18em; font-family:var(--font-deco); margin-bottom:6px; margin-top:4px; position:relative; }
+/* Header row — now in normal flow, not absolute */
+.np-hd-row { position:relative; display:flex; align-items:center; justify-content:space-between; z-index:3; padding:12px 4px 10px; border-bottom:1px solid var(--border); margin:0 -30px; padding-left:16px; padding-right:16px; }
+.np-hd-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-md);
+  border-radius: 8px;
+  color: var(--text-m);
+  height: 30px;
+  padding: 0 12px;
+  cursor: pointer;
+  font-size: .72rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all .18s var(--ease);
+  font-family: var(--font-bn);
+  position: relative;
+  overflow: hidden;
+}
+.np-hd-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,var(--gold-glow),transparent); opacity:0; transition:opacity .2s; }
+/* Minimize button — teal accent */
+.np-hd-btn.minimize { border-color:rgba(34,117,94,.3); }
+.np-hd-btn.minimize:hover { color:var(--teal-l); border-color:var(--teal-l); box-shadow:0 0 10px rgba(34,117,94,.2); }
+.np-hd-btn.minimize:hover::before { opacity:1 }
+/* Close button — ruby/gold accent */
+.np-hd-btn.close-btn { border-color:rgba(184,145,42,.25); }
+.np-hd-btn.close-btn:hover { color:var(--gold-xl); border-color:var(--gold); box-shadow:0 0 10px var(--gold-glow); }
+.np-hd-btn.close-btn:hover::before { opacity:1 }
+.np-hd-btn svg { flex-shrink:0; position:relative; }
+.np-hd-btn span { position:relative; }
+.np-surah-info { font-size:.66rem; color:var(--gold-dim); text-transform:uppercase; letter-spacing:.18em; font-family:var(--font-deco); margin-bottom:6px; margin-top:16px; position:relative; }
 .np-ayah-badge { display:inline-flex; align-items:center; justify-content:center; width:42px; height:42px; border:1.5px solid var(--border-gld); border-radius:50%; font-family:var(--font-deco); font-size:.82rem; color:var(--gold-l); background:var(--bg-card); margin:0 auto 14px; position:relative; box-shadow:0 0 16px var(--gold-glow); }
 .np-arabic { font-family:var(--font-ar); direction:rtl; font-size:clamp(1.4rem,3.2vw,2rem); color:var(--text-ar); line-height:2.2; margin-bottom:20px; position:relative; text-shadow:0 0 18px rgba(184,145,42,.1); transition:opacity .35s ease; }
 .np-divider { display:flex; align-items:center; gap:10px; margin-bottom:14px; position:relative; }
@@ -972,7 +999,8 @@ body {
   .stats-row { gap:18px; }
   .stat-n { font-size:1.5rem; }
   .mini-player { right:12px; bottom:72px; min-width:220px; max-width:260px; }
-  .np-modal { padding:28px 20px 0; border-radius:18px; }
+  .np-modal { border-radius:18px; }
+  .np-hd-row { margin:0 -20px; padding-left:14px; padding-right:14px; }
   .names-headline-ar { font-size:clamp(1.5rem,5vw,2.2rem) !important; }
   .names-headline::before, .names-headline::after { width:calc(50% - 120px); }
 }
@@ -1014,8 +1042,9 @@ body {
   .audio-sn { font-size:.75rem; }
   .au-progress { max-width:120px; }
   .au-rec { display:none; }
-  .np-modal { padding:22px 14px 0; border-radius:16px; }
-  .np-hd-btn { font-size:.65rem; padding:0 8px; }
+  .np-modal { border-radius:16px; }
+  .np-hd-row { margin:0 -14px; padding-left:12px; padding-right:12px; }
+  .np-hd-btn { font-size:.65rem; padding:0 8px; height:28px; }
   .np-arabic { font-size:clamp(1.2rem,5vw,1.6rem) !important; line-height:2; }
   .np-bangla { font-size:.88rem; line-height:1.9; }
   .np-ayah-badge { width:36px; height:36px; font-size:.75rem; }
@@ -1184,11 +1213,14 @@ body {
 <div class="np-overlay" id="npOverlay">
   <div class="np-modal" id="npModal">
     <div class="np-hd-row">
-      <button class="np-hd-btn" onclick="minimizeNP()">
+      <button class="np-hd-btn minimize" onclick="minimizeNP()">
         <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 9l7-7M9 9V2H2"/></svg>
-        মিনিমাইজ
+        <span>মিনিমাইজ</span>
       </button>
-      <button class="np-hd-btn" onclick="closeNP()">✕ বন্ধ</button>
+      <button class="np-hd-btn close-btn" onclick="closeNP()">
+        <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l10 10M11 1L1 11"/></svg>
+        <span>বন্ধ</span>
+      </button>
     </div>
     <div class="np-surah-info" id="npSurahInfo">সূরা —</div>
     <div class="np-ayah-badge" id="npAyahBadge">—</div>
