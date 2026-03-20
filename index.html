@@ -132,6 +132,29 @@ body {
   flex-direction: column;
   align-items: center;
 }
+/* Sidebar close button — mobile only */
+.sidebar-close-btn {
+  display: none;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 30px; height: 30px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-gld);
+  border-radius: 8px;
+  color: var(--gold-l);
+  cursor: pointer;
+  font-size: .75rem;
+  align-items: center;
+  justify-content: center;
+  transition: all .18s var(--ease);
+  z-index: 10;
+}
+.sidebar-close-btn:hover {
+  background: var(--bg-hover);
+  color: var(--gold-xl);
+  box-shadow: 0 0 10px var(--gold-glow);
+}
 .brand-logo {
   display: block;
   width: 210px;
@@ -395,7 +418,7 @@ body {
 /* ═══════════════════════════════════════════════
    HERO / HOME SCREEN
 ═══════════════════════════════════════════════ */
-.hero { min-height:100%; display:flex; flex-direction:column; align-items:center; padding:0 0 80px; animation:fadeUp .6s var(--ease); }
+.hero { min-height:100%; display:flex; flex-direction:column; align-items:center; padding:0 0 0; animation:fadeUp .6s var(--ease); }
 
 .hero-header {
   width: 100%;
@@ -470,179 +493,68 @@ body {
 .section-label { font-size:.65rem; letter-spacing:.18em; text-transform:uppercase; color:var(--text-m); font-family:var(--font-deco); margin-bottom:14px; display:block; text-align:center; }
 
 /* ═══════════════════════════════════════════════
-   HERO SEARCH — Premium redesign
+   HERO SEARCH
 ═══════════════════════════════════════════════ */
-.hero-search-wrap {
-  width: 100%;
-  max-width: 560px;
-  padding: 0 20px;
-  margin-bottom: 0;
-}
-.hero-search-box {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
+.hero-search-wrap { width:100%; max-width:520px; padding:0 20px; margin-bottom:0; }
+.hero-search-box { position:relative; display:flex; align-items:center; }
 .hero-search-box input {
-  width: 100%;
-  padding: 14px 50px 14px 50px;
+  width: 100%; padding: 13px 46px 13px 18px;
   background: var(--bg-card);
-  border: 1px solid var(--border-gld);
-  border-radius: 16px;
+  border: 1px solid var(--border-md);
+  border-radius: 12px;
   color: var(--text-h);
   font-family: var(--font-bn);
-  font-size: .9rem;
+  font-size: .92rem;
   outline: none;
   transition: border-color .2s, box-shadow .2s;
-  box-shadow: 0 4px 20px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.03);
+  box-shadow: var(--shadow-sm);
 }
-.hero-search-box input:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px var(--gold-glow), 0 4px 20px rgba(0,0,0,.25);
-}
-.hero-search-box input::placeholder { color: var(--text-m) }
-/* Search icon left */
-.hero-search-icon-left {
-  position: absolute;
-  left: 17px;
-  color: var(--gold-dim);
-  font-size: 1rem;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-}
-/* Quran ornament right */
-.hero-search-icon {
-  position: absolute;
-  right: 16px;
-  color: var(--gold-dim);
-  font-size: .85rem;
-  pointer-events: none;
-  font-family: var(--font-ar);
-  opacity: .5;
-}
+.hero-search-box input:focus { border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-glow),var(--shadow-sm); }
+.hero-search-box input::placeholder { color:var(--text-m) }
+.hero-search-icon { position:absolute; right:14px; color:var(--gold-dim); font-size:1.05rem; pointer-events:none; }
 .hero-search-results {
-  position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+  position: absolute; top:calc(100% + 6px); left:0; right:0;
   background: var(--bg-card);
   border: 1px solid var(--border-gld);
-  border-radius: 14px;
+  border-radius: 12px;
   box-shadow: var(--shadow-md);
   z-index: 200;
-  max-height: 300px;
+  max-height: 280px;
   overflow-y: auto;
   display: none;
 }
-.hero-search-results.show { display: block }
-.hsr-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 16px; cursor: pointer;
-  border-bottom: 1px solid var(--border);
-  transition: background .12s;
-}
-.hsr-item:last-child { border-bottom: none }
-.hsr-item:hover { background: var(--bg-hover) }
-.hsr-num { font-size:.68rem; color:var(--gold-l); font-family:var(--font-deco); min-width:24px; }
-.hsr-bn { font-size:.84rem; font-weight:600; color:var(--text-h); }
+.hero-search-results.show { display:block }
+.hsr-item { display:flex; align-items:center; gap:10px; padding:9px 14px; cursor:pointer; border-bottom:1px solid var(--border); transition:background .12s; }
+.hsr-item:last-child { border-bottom:none }
+.hsr-item:hover { background:var(--bg-hover) }
+.hsr-num { font-size:.68rem; color:var(--gold-l); font-family:var(--font-deco); min-width:22px; }
+.hsr-bn { font-size:.83rem; font-weight:600; color:var(--text-h); }
 .hsr-en { font-size:.68rem; color:var(--text-m); }
-.hsr-ar { font-family:var(--font-ar); font-size:1rem; color:var(--gold-dim); direction:rtl; margin-left:auto; }
+.hsr-ar { font-family:var(--font-ar); font-size:.95rem; color:var(--gold-dim); direction:rtl; margin-left:auto; }
 
 /* ═══════════════════════════════════════════════
    PINNED SURAHS — Accordion dropdown
 ═══════════════════════════════════════════════ */
-.pinned-wrap { width:100%; max-width:560px; padding:20px 20px 0; }
-
-.pinned-toggle-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 18px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-gld);
-  border-radius: 14px;
-  cursor: pointer;
-  transition: all .2s var(--ease);
-  font-family: var(--font-bn);
-  gap: 10px;
-  position: relative;
-  overflow: hidden;
-}
-.pinned-toggle-btn::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(90deg, rgba(184,145,42,.06), transparent);
-  opacity: 0; transition: opacity .2s;
-}
-.pinned-toggle-btn:hover { border-color: var(--gold); box-shadow: 0 0 14px var(--gold-glow); }
-.pinned-toggle-btn:hover::before { opacity: 1 }
-.pinned-toggle-btn.open { border-radius: 14px 14px 0 0; border-bottom-color: transparent; }
-.ptb-left { display:flex; align-items:center; gap:10px; position:relative; }
-.ptb-icon {
-  width: 28px; height: 28px;
-  background: linear-gradient(135deg, var(--gold-dim), var(--gold));
-  border-radius: 8px;
-  display: flex; align-items:center; justify-content:center;
-  font-size: .8rem;
-  flex-shrink: 0;
-}
-.ptb-label { font-size:.82rem; font-weight:600; color:var(--text-h); }
-.ptb-sub { font-size:.65rem; color:var(--text-m); }
-.ptb-arrow {
-  font-size: .6rem;
-  color: var(--gold-dim);
-  transition: transform .25s var(--ease);
-  position: relative;
-}
-.pinned-toggle-btn.open .ptb-arrow { transform: rotate(180deg); }
-
-.pinned-dropdown {
-  display: none;
-  background: var(--bg-card);
-  border: 1px solid var(--border-gld);
-  border-top: none;
-  border-radius: 0 0 14px 14px;
-  overflow: hidden;
-  animation: tafsirSlideDown .25s var(--ease);
-}
-.pinned-dropdown.open { display: block; }
-.pinned-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
-  background: var(--border);
-  padding: 0;
-}
+.pinned-wrap { width:100%; max-width:800px; padding:30px 24px 0; }
+.pinned-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
 .pin-card {
   background: var(--bg-card);
-  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px 12px;
   cursor: pointer;
-  transition: all .18s var(--ease);
+  transition: all .22s var(--ease);
   position: relative;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-align: left;
+  display: flex; flex-direction:column; align-items:center; text-align:center;
 }
-.pin-card:hover { background: var(--bg-hover); }
-.pin-card:hover .pin-ar { color: var(--gold-xl); }
-.pin-badge {
-  font-size: .52rem;
-  color: var(--gold-dim);
-  font-family: var(--font-deco);
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 1px 5px;
-  letter-spacing: .04em;
-  flex-shrink: 0;
-  align-self: flex-start;
-  margin-top: 2px;
-}
-.pin-info { flex: 1; min-width: 0; }
-.pin-ar { font-family:var(--font-ar); font-size:1.1rem; color:var(--gold-l); direction:rtl; line-height:1.5; display:block; transition:color .15s; }
-.pin-bn { font-size:.78rem; font-weight:700; color:var(--text-h); display:block; }
-.pin-meta { font-size:.6rem; color:var(--text-m); margin-top:1px; display:block; }
+.pin-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold-dim),transparent); opacity:0; transition:opacity .2s; }
+.pin-card:hover { border-color:var(--border-gld); transform:translateY(-3px); box-shadow:var(--shadow-md),0 0 18px var(--gold-glow); }
+.pin-card:hover::before { opacity:1 }
+.pin-badge { position:absolute; top:8px; right:8px; font-size:.55rem; color:var(--gold-dim); font-family:var(--font-deco); background:var(--bg-surface); border:1px solid var(--border); border-radius:5px; padding:2px 6px; letter-spacing:.05em; }
+.pin-ar { font-family:var(--font-ar); font-size:1.25rem; color:var(--gold-l); direction:rtl; line-height:1.6; margin-bottom:5px; }
+.pin-bn { font-size:.8rem; font-weight:700; color:var(--text-h); }
+.pin-meta { font-size:.64rem; color:var(--text-m); margin-top:2px; }
 
 /* ═══════════════════════════════════════════════
    ALLAH'S 99 NAMES — WITH CALLIGRAPHY HEADLINE
@@ -1342,7 +1254,7 @@ body {
 ═══════════════════════════════════════════════ */
 .dev-footer {
   width: 100%;
-  padding: 36px 24px 28px;
+  padding: 28px 24px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1511,6 +1423,7 @@ body {
   .sidebar.open { transform:translateX(0); box-shadow:4px 0 30px rgba(0,0,0,.6); }
   .sb-overlay.open { display:block; }
   .menu-btn { display:flex; }
+  .sidebar-close-btn { display:flex; }
   .audio-bar { left:0; }
   .read-prog { left:0; }
   .fs-ctrl { display:none; }
@@ -1526,7 +1439,7 @@ body {
   .stats-row { width:calc(100% - 28px); margin-left:auto; margin-right:auto; }
   .hero-bismillah { font-size:1.8rem; }
   .hero-search-wrap { padding:0 14px; }
-  .pinned-wrap { padding:16px 14px 0; }
+  .pinned-wrap { padding:20px 14px 0; }
   .stat-n { font-size:1.5rem; }
   .mini-player { right:12px; bottom:72px; min-width:220px; max-width:260px; }
   .np-modal { border-radius:18px; }
@@ -1610,6 +1523,10 @@ body {
 <!-- ════════════ SIDEBAR ════════════ -->
 <aside class="sidebar" id="sidebar">
   <div class="brand-wrap">
+    <!-- Sidebar close button (mobile) -->
+    <button class="sidebar-close-btn" onclick="closeSidebar()" title="বন্ধ করুন">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l10 10M11 1L1 11"/></svg>
+    </button>
     <!-- Al-Quran Logo SVG -->
     <svg class="brand-logo" viewBox="0 0 210 100" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -1785,7 +1702,6 @@ body {
     <div class="hero" id="homeScreen">
       <div class="hero-header">
         <div class="geo-pattern"></div>
-        <span class="hero-ornament">❧ ✦ ❦</span>
         <div class="hero-bismillah">بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>
         <div class="hero-divider"></div>
         <span class="hero-title">AL-QURAN AL-KAREEM</span>
@@ -1800,30 +1716,16 @@ body {
 
       <div class="hero-search-wrap" style="margin-top:24px;position:relative">
         <div class="hero-search-box">
-          <span class="hero-search-icon-left">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M15 15l-3.5-3.5"/></svg>
-          </span>
           <input type="text" id="heroSearch" placeholder="সূরা খুঁজুন — বাংলা, English বা নম্বর..." oninput="heroSearchFn(this.value)" onblur="setTimeout(()=>document.getElementById('heroSearchRes').classList.remove('show'),180)" autocomplete="off">
-          <span class="hero-search-icon">ق</span>
+          <span class="hero-search-icon">⌕</span>
         </div>
         <div class="hero-search-results" id="heroSearchRes"></div>
       </div>
 
-      <!-- Pinned Surahs — Accordion -->
+      <!-- Pinned Surahs — Grid -->
       <div class="pinned-wrap">
-        <button class="pinned-toggle-btn" id="pinnedToggleBtn" onclick="togglePinned()">
-          <div class="ptb-left">
-            <div class="ptb-icon">☆</div>
-            <div>
-              <div class="ptb-label">গুরুত্বপূর্ণ সূরাসমূহ</div>
-              <div class="ptb-sub">ফযিলতপূর্ণ ও বিশেষ সূরার তালিকা</div>
-            </div>
-          </div>
-          <span class="ptb-arrow">▼</span>
-        </button>
-        <div class="pinned-dropdown" id="pinnedDropdown">
-          <div class="pinned-grid" id="pinnedGrid"></div>
-        </div>
+        <span class="section-label">— গুরুত্বপূর্ণ ও ফযিলতপূর্ণ সূরা —</span>
+        <div class="pinned-grid" id="pinnedGrid"></div>
       </div>
 
       <!-- 99 Names — right after search/pinned -->
@@ -2206,21 +2108,12 @@ function buildPinnedGrid(){
   document.getElementById('pinnedGrid').innerHTML=PINNED.map(p=>{
     const s=SD.find(x=>x.n===p.n);
     return `<div class="pin-card" onclick="loadSurah(${p.n})">
-      <div class="pin-info">
-        <span class="pin-ar">${s.ar}</span>
-        <span class="pin-bn">${s.bn}</span>
-        <span class="pin-meta">${p.lbl}</span>
-      </div>
       <span class="pin-badge">${p.tag}</span>
+      <span class="pin-ar">${s.ar}</span>
+      <span class="pin-bn">${s.bn}</span>
+      <span class="pin-meta">${p.lbl}</span>
     </div>`;
   }).join('');
-}
-
-function togglePinned(){
-  const btn=document.getElementById('pinnedToggleBtn');
-  const dd=document.getElementById('pinnedDropdown');
-  btn.classList.toggle('open');
-  dd.classList.toggle('open');
 }
 
 function heroSearchFn(q){
