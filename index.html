@@ -1196,8 +1196,150 @@ body {
 .mini-expand-hint { font-size:.58rem; color:var(--text-m); text-align:center; margin-top:6px; font-family:var(--font-deco); letter-spacing:.1em; opacity:.7; }
 
 /* ═══════════════════════════════════════════════
-   ANIMATIONS
+   DEVELOPER FOOTER
 ═══════════════════════════════════════════════ */
+.dev-footer {
+  width: 100%;
+  padding: 36px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  position: relative;
+  margin-top: 10px;
+}
+.dev-footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-gld), transparent);
+}
+.dev-footer-orn {
+  color: var(--gold);
+  font-size: .7rem;
+  letter-spacing: .6rem;
+  opacity: .35;
+  margin-bottom: 14px;
+  user-select: none;
+}
+.dev-footer-card {
+  background: linear-gradient(135deg, var(--bg-card), var(--bg-surface));
+  border: 1px solid var(--border-gld);
+  border-radius: 16px;
+  padding: 18px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  max-width: 340px;
+  width: 100%;
+}
+.dev-footer-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(184,145,42,.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.dev-footer-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-l), transparent);
+}
+.dev-label {
+  font-family: var(--font-deco);
+  font-size: .55rem;
+  color: var(--text-m);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 8px;
+  position: relative;
+}
+.dev-name {
+  font-family: var(--font-disp);
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--gold-l);
+  display: block;
+  position: relative;
+  letter-spacing: .02em;
+}
+.dev-name-en {
+  font-family: var(--font-deco);
+  font-size: .72rem;
+  color: var(--text-m);
+  display: block;
+  margin-top: 4px;
+  letter-spacing: .08em;
+  position: relative;
+}
+.dev-divider {
+  width: 36px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  margin: 10px auto;
+  position: relative;
+}
+.dev-tagline {
+  font-family: var(--font-bn);
+  font-size: .68rem;
+  color: var(--text-m);
+  display: block;
+  position: relative;
+  line-height: 1.7;
+}
+.dev-footer-year {
+  font-family: var(--font-deco);
+  font-size: .55rem;
+  color: var(--text-m);
+  opacity: .45;
+  margin-top: 12px;
+  letter-spacing: .15em;
+  position: relative;
+}
+
+/* Footer inside surah view — simpler inline version */
+.dev-footer-inline {
+  text-align: center;
+  padding: 28px 24px 16px;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+  position: relative;
+}
+.dev-footer-inline::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 80px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+.dev-footer-inline .dev-label {
+  font-family: var(--font-deco);
+  font-size: .52rem;
+  color: var(--text-m);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+.dev-footer-inline .dev-name {
+  font-family: var(--font-disp);
+  font-size: .88rem;
+  font-style: italic;
+  color: var(--gold-dim);
+  display: block;
+  letter-spacing: .03em;
+}
+
+@media (max-width: 480px) {
+  .dev-footer-card { padding: 14px 20px; }
+  .dev-name { font-size: .92rem; }
+}
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 @keyframes spin { to{transform:rotate(360deg)} }
@@ -1541,6 +1683,16 @@ body {
           <span class="names-headline-sub">وَلِلَّهِ الْأَسْمَاءُ الْحُسْنَى فَادْعُوهُ بِهَا &mdash; সূরা আল-আরাফ ৭:১৮০</span>
         </div>
         <div class="names-grid" id="namesGrid"></div>
+      </div>
+
+      <!-- Developer Footer -->
+      <div class="dev-footer">
+        <span class="dev-footer-orn">❧ ✦ ❦</span>
+        <div class="dev-footer-card">
+          <span class="dev-label">Developed by</span>
+          <span class="dev-name">Md. Ferdous Foysal Hridoy</span>
+          <div class="dev-footer-year">© 2025 · Al-Quran Bangla</div>
+        </div>
       </div>
     </div>
 
@@ -2117,7 +2269,7 @@ function renderSurahHeader(s){
 
 function renderAyahs(s){
   const wrap=document.getElementById('ayahsWrap');
-  wrap.innerHTML=ST.ayahs.map((a,i)=>{
+  wrap.innerHTML = ST.ayahs.map((a,i)=>{
     const key=`${s.n}:${a.num}`;
     const isBm=ST.bms.some(b=>b.k===key);
     return `
@@ -2171,10 +2323,13 @@ function renderAyahs(s){
         </div>
       </div>
     </div>`;
-  }).join('');
+  }).join('') + `
+  <div class="dev-footer-inline">
+    <span class="dev-label">Developed by</span>
+    <span class="dev-name">Md. Ferdous Foysal Hridoy</span>
+  </div>`;
 }
 
-function prevSurah(){if(ST.cur>1) loadSurah(ST.cur-1);}
 function nextSurah(){if(ST.cur<114) loadSurah(ST.cur+1);}
 
 function jumpToAyah(){
