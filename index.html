@@ -1155,21 +1155,113 @@ body {
 }
 .panel::before { content:''; position:absolute; left:0; top:0; bottom:0; width:1px; background:linear-gradient(180deg,var(--gold-dim),transparent,var(--gold-dim)); opacity:.5; }
 .panel.show { transform:translateX(0); }
-.panel-hd { padding:18px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-.panel-title { font-size:.92rem; font-weight:600; color:var(--text-h); display:flex; align-items:center; gap:8px; }
+.panel-hd {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-gld);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, rgba(200,160,64,.06), transparent);
+}
+.panel-title { font-size:.92rem; font-weight:700; color:var(--text-h); display:flex; align-items:center; gap:8px; font-family:var(--font-bn); }
 .panel-close { background:none; border:none; color:var(--text-m); cursor:pointer; font-size:1.1rem; width:28px; height:28px; border-radius:6px; transition:all .15s; display:flex; align-items:center; justify-content:center; }
 .panel-close:hover { background:var(--bg-hover); color:var(--text-h); }
 .panel-body { flex:1; overflow-y:auto; padding:12px; }
 
-.bm-item { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-sm); padding:13px; margin-bottom:10px; cursor:pointer; transition:all .18s; }
-.bm-item:hover { border-color:var(--border-gld); transform:translateY(-1px); box-shadow:var(--shadow-sm); }
-.bm-sn { font-size:.83rem; font-weight:600; color:var(--text-h); }
-.bm-an { font-size:.7rem; color:var(--text-m); margin-top:1px; }
-.bm-ar { font-family:var(--font-ar); direction:rtl; font-size:1rem; color:var(--gold-dim); margin-top:7px; line-height:1.8; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.bm-bn { font-size:.72rem; color:var(--text-m); margin-top:3px; }
-.bm-acts { display:flex; gap:6px; margin-top:10px; }
-.bm-act-btn { flex:1; padding:5px; background:var(--bg-surface); border:1px solid var(--border); border-radius:7px; color:var(--text-m); cursor:pointer; font-size:.72rem; text-align:center; transition:all .15s; font-family:var(--font-bn); }
-.bm-act-btn:hover { background:var(--bg-hover); color:var(--text-h); }
+.bm-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 0;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all .2s var(--ease);
+  overflow: hidden;
+  position: relative;
+}
+.bm-item::before {
+  content:'';
+  position:absolute; top:0; left:0; bottom:0; width:3px;
+  background: linear-gradient(180deg, var(--gold), var(--gold-dim));
+  opacity:0; transition:opacity .2s;
+}
+.bm-item:hover { border-color:var(--border-gld); box-shadow:var(--shadow-sm), 0 0 16px var(--gold-glow); transform:translateY(-2px); }
+.bm-item:hover::before { opacity:1 }
+
+.bm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 8px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+}
+.bm-surah-info { display:flex; align-items:center; gap:8px; }
+.bm-num {
+  width:28px; height:28px;
+  border:1px solid var(--border-gld); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.65rem; color:var(--gold-l);
+  font-family:var(--font-deco); flex-shrink:0;
+  background:var(--bg-card);
+}
+.bm-sn { font-size:.82rem; font-weight:700; color:var(--text-h); font-family:var(--font-bn); }
+.bm-sar { font-family:var(--font-ar); font-size:.95rem; color:var(--gold-dim); direction:rtl; }
+.bm-an {
+  font-size:.65rem; color:var(--gold-dim);
+  font-family:var(--font-deco); letter-spacing:.05em;
+  background:var(--bg-card); border:1px solid var(--border-gld);
+  border-radius:10px; padding:2px 8px;
+}
+
+.bm-body { padding:10px 14px 12px; }
+.bm-ar {
+  font-family:var(--font-ar); direction:rtl;
+  font-size:1.05rem; color:var(--text-ar);
+  line-height:2; margin-bottom:6px;
+  display:-webkit-box; -webkit-line-clamp:2;
+  -webkit-box-orient:vertical; overflow:hidden;
+}
+.bm-bn {
+  font-size:.78rem; color:var(--text-m);
+  font-family:var(--font-bn); line-height:1.7;
+  display:-webkit-box; -webkit-line-clamp:2;
+  -webkit-box-orient:vertical; overflow:hidden;
+}
+
+.bm-acts {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.bm-act-btn {
+  flex:1; padding:7px 8px;
+  border-radius:8px; cursor:pointer;
+  font-size:.72rem; text-align:center;
+  transition:all .18s var(--ease);
+  font-family:var(--font-bn);
+  display:flex; align-items:center; justify-content:center; gap:5px;
+}
+.bm-act-play {
+  background:linear-gradient(135deg, var(--teal), var(--teal-l));
+  border:none; color:#e8f5f0;
+  box-shadow:0 2px 8px rgba(26,96,80,.3);
+}
+.bm-act-play:hover { background:linear-gradient(135deg,var(--teal-l),#2a8870); box-shadow:0 3px 12px rgba(26,96,80,.5); }
+.bm-act-del {
+  background:var(--bg-surface);
+  border:1px solid rgba(180,60,60,.3);
+  color:rgba(200,80,80,.8);
+}
+.bm-act-del:hover { background:rgba(180,60,60,.12); border-color:rgba(200,80,80,.5); color:#d46060; }
+.bm-act-goto {
+  background:var(--bg-surface);
+  border:1px solid var(--border-gld);
+  color:var(--gold-l);
+}
+.bm-act-goto:hover { background:var(--bg-hover); box-shadow:0 0 10px var(--gold-glow); }
 
 .tasbeeh-wrap { text-align:center; padding:24px 18px; }
 .ts-ar { font-family:var(--font-ar); font-size:1.6rem; color:var(--gold-l); direction:rtl; line-height:1.6; }
@@ -1916,6 +2008,7 @@ body {
     <div class="panel-title">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--gold-l)" stroke-width="1.5"><path d="M3 2h10v12l-5-3-5 3V2z"/></svg>
       আমার বুকমার্ক
+      <span id="bmPanelCount" style="font-size:.65rem;color:var(--gold-dim);background:var(--bg-card);border:1px solid var(--border-gld);border-radius:10px;padding:1px 8px;font-family:var(--font-deco)"></span>
     </div>
     <button class="panel-close" onclick="closeBookmarks()">✕</button>
   </div>
@@ -2625,17 +2718,49 @@ function updateBmCount(){document.getElementById('bmCountHero').textContent=bn(S
 function openBookmarks(){document.getElementById('bmOverlay').classList.add('show');document.getElementById('bmPanel').classList.add('show');renderBmPanel();}
 function closeBookmarks(){document.getElementById('bmOverlay').classList.remove('show');document.getElementById('bmPanel').classList.remove('show');}
 function renderBmPanel(){
-  const b=document.getElementById('bmBody');
-  if(!ST.bms.length){b.innerHTML='<div class="empty"><span class="empty-icon">🔖</span><div>কোনো বুকমার্ক নেই</div><div style="font-size:.72rem;margin-top:5px;color:var(--text-m)">আয়াতের বুকমার্ক বাটনে চাপুন</div></div>';return;}
-  b.innerHTML=ST.bms.map(bm=>`
+  const b = document.getElementById('bmBody');
+  const countEl = document.getElementById('bmPanelCount');
+  if(countEl) countEl.textContent = ST.bms.length ? bn(ST.bms.length) : '';
+
+  if(!ST.bms.length){
+    b.innerHTML=`
+      <div class="empty" style="padding:50px 20px">
+        <span class="empty-icon" style="font-size:2.5rem">🔖</span>
+        <div style="font-size:.92rem;color:var(--text-h);margin-top:8px;font-family:var(--font-bn)">কোনো বুকমার্ক নেই</div>
+        <div style="font-size:.75rem;margin-top:6px;color:var(--text-m);font-family:var(--font-bn);line-height:1.7">আয়াতের পাশের 🔖 বাটনে চাপলে<br>এখানে সংরক্ষিত হবে</div>
+      </div>`;
+    return;
+  }
+
+  b.innerHTML = ST.bms.map((bm,i) => `
     <div class="bm-item" onclick="goToBm(${bm.sn},${bm.an})">
-      <div class="bm-sn">${bm.sbn} — ${bm.sar}</div>
-      <div class="bm-an">আয়াত ${bn(bm.an)}</div>
-      <div class="bm-ar">${bm.ar}…</div>
-      <div class="bm-bn">${bm.bnTxt}…</div>
-      <div class="bm-acts">
-        <button class="bm-act-btn" onclick="event.stopPropagation();playAyah(${bm.sn},${bm.an})">▶ শুনুন</button>
-        <button class="bm-act-btn" onclick="event.stopPropagation();delBm('${bm.k}')">🗑 মুছুন</button>
+      <div class="bm-header">
+        <div class="bm-surah-info">
+          <div class="bm-num">${bn(bm.sn)}</div>
+          <div>
+            <div class="bm-sn">${bm.sbn}</div>
+          </div>
+          <div class="bm-sar">${bm.sar}</div>
+        </div>
+        <span class="bm-an">আয়াত ${bn(bm.an)}</span>
+      </div>
+      <div class="bm-body">
+        <div class="bm-ar">${bm.ar}…</div>
+        <div class="bm-bn">${bm.bnTxt}…</div>
+        <div class="bm-acts">
+          <button class="bm-act-btn bm-act-play" onclick="event.stopPropagation();playAyah(${bm.sn},${bm.an});closeBookmarks()">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M4 3l10 5-10 5V3z"/></svg>
+            শুনুন
+          </button>
+          <button class="bm-act-btn bm-act-goto" onclick="event.stopPropagation();goToBm(${bm.sn},${bm.an})">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            পড়ুন
+          </button>
+          <button class="bm-act-btn bm-act-del" onclick="event.stopPropagation();delBm('${bm.k}')">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M6 4V2h4v2M5 4l1 9h4l1-9"/></svg>
+            মুছুন
+          </button>
+        </div>
       </div>
     </div>`).join('');
 }
