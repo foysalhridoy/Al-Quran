@@ -528,6 +528,9 @@ body {
   display: none;
 }
 .hero-search-results.show { display:block }
+@media(max-width:768px){
+  .hero-search-results { max-height: 38vh; }
+}
 .hsr-item { display:flex; align-items:center; gap:10px; padding:9px 14px; cursor:pointer; border-bottom:1px solid var(--border); transition:background .12s; }
 .hsr-item:last-child { border-bottom:none }
 .hsr-item:hover { background:var(--bg-hover) }
@@ -1173,8 +1176,28 @@ body {
 .ts-bn { font-size:.82rem; color:var(--text-m); margin-top:4px; margin-bottom:20px; }
 .ts-count { font-family:var(--font-deco); font-size:5rem; color:var(--gold-l); display:block; margin:0 0 8px; text-shadow:0 0 30px var(--gold-glow); line-height:1; }
 .ts-goal { font-size:.75rem; color:var(--text-m); margin-bottom:20px; }
-.ts-tap { width:130px; height:130px; border-radius:50%; background:radial-gradient(circle at 40% 35%,var(--bg-card),var(--bg-surface)); border:2px solid var(--border-gld); color:var(--gold-l); font-size:2.4rem; cursor:pointer; margin:0 auto 22px; display:flex; align-items:center; justify-content:center; transition:all .1s; box-shadow:0 4px 22px var(--gold-glow); user-select:none; }
-.ts-tap:active { transform:scale(.9); box-shadow:0 2px 8px var(--gold-glow); }
+.ts-tap {
+  width:130px; height:130px; border-radius:50%;
+  background:radial-gradient(circle at 40% 35%,var(--bg-card),var(--bg-surface));
+  border:2px solid var(--border-gld);
+  color:var(--gold-l); font-size:2.4rem; cursor:pointer;
+  margin:0 auto 22px; display:flex; align-items:center; justify-content:center;
+  transition:all .12s; box-shadow:0 4px 22px var(--gold-glow);
+  user-select:none; position:relative; overflow:hidden;
+}
+.ts-tap:active { transform:scale(.88); box-shadow:0 2px 8px var(--gold-glow); }
+/* Ripple */
+.ts-ripple {
+  position:absolute;
+  border-radius:50%;
+  background:rgba(200,160,64,.35);
+  transform:scale(0);
+  animation:tsRipple .55s ease-out forwards;
+  pointer-events:none;
+}
+@keyframes tsRipple {
+  to { transform:scale(4); opacity:0; }
+}
 .ts-chips { display:flex; gap:7px; flex-wrap:wrap; justify-content:center; margin-bottom:14px; }
 .ts-chip { padding:6px 14px; background:var(--bg-card); border:1px solid var(--border-md); border-radius:20px; color:var(--text-b); cursor:pointer; font-family:var(--font-bn); font-size:.76rem; transition:all .15s; }
 .ts-chip:hover, .ts-chip.active { border-color:var(--gold); color:var(--gold-xl); }
@@ -1771,7 +1794,7 @@ body {
 
       <div class="hero-search-wrap" style="margin-top:24px;position:relative">
         <div class="hero-search-box">
-          <input type="text" id="heroSearch" placeholder="সূরা খুঁজুন — বাংলা, English বা নম্বর..." oninput="heroSearchFn(this.value)" onblur="setTimeout(()=>document.getElementById('heroSearchRes').classList.remove('show'),180)" autocomplete="off">
+          <input type="text" id="heroSearch" placeholder="সূরা খুঁজুন — বাংলা, English বা নম্বর..." oninput="heroSearchFn(this.value)" onfocus="scrollSearchIntoView()" onblur="setTimeout(()=>document.getElementById('heroSearchRes').classList.remove('show'),180)" autocomplete="off">
           <span class="hero-search-icon">⌕</span>
         </div>
         <div class="hero-search-results" id="heroSearchRes"></div>
@@ -1912,7 +1935,7 @@ body {
       <div class="ts-bn" id="tsBnText">সুবহানাল্লাহ</div>
       <span class="ts-count" id="tsCnt">০</span>
       <div class="ts-goal" id="tsGoalTxt">লক্ষ্য: ৩৩</div>
-      <div class="ts-tap" onclick="tapTasbeeh()" id="tsTapBtn">📿</div>
+      <div class="ts-tap" onclick="tapTasbeeh(event)" id="tsTapBtn">📿</div>
       <div class="ts-chips">
         <button class="ts-chip active" onclick="changeTasbeeh(0)">সুবহানাল্লাহ</button>
         <button class="ts-chip" onclick="changeTasbeeh(1)">আলহামদুলিল্লাহ</button>
@@ -2185,6 +2208,21 @@ function heroSearchFn(q){
       <div class="hsr-ar">${s.ar}</div>
     </div>`).join('');
   resEl.classList.add('show');
+}
+
+function scrollSearchIntoView(){
+  // Mobile: scroll search box into view so results aren't hidden by keyboard
+  if(window.innerWidth > 768) return;
+  setTimeout(()=>{
+    const el = document.getElementById('heroSearch');
+    if(!el) return;
+    el.scrollIntoView({behavior:'smooth', block:'start'});
+    // Extra scroll to account for keyboard height (~40vh)
+    setTimeout(()=>{
+      const ca = document.getElementById('contentArea');
+      if(ca) ca.scrollTop += 20;
+    }, 350);
+  }, 300);
 }
 
 document.addEventListener('click',e=>{
@@ -2655,10 +2693,31 @@ function closeSidebar(){sbOpen=false;document.getElementById('sidebar').classLis
 
 function openTasbeeh(){document.getElementById('tsOverlay').classList.add('show');document.getElementById('tsPanel').classList.add('show');updateTasbeehUI();}
 function closeTasbeeh(){document.getElementById('tsOverlay').classList.remove('show');document.getElementById('tsPanel').classList.remove('show');}
-function tapTasbeeh(){
+function tapTasbeeh(e){
   ST.ts.cnt++;
-  const b=document.getElementById('tsTapBtn');b.style.transform='scale(.88)';setTimeout(()=>b.style.transform='',100);
-  if(ST.ts.cnt%ST.ts.goal===0){ST.ts.comp++;if(navigator.vibrate)navigator.vibrate([50,30,50]);}
+  const b = document.getElementById('tsTapBtn');
+  b.style.transform='scale(.88)';
+  setTimeout(()=>b.style.transform='', 120);
+
+  // Ripple effect
+  const ripple = document.createElement('span');
+  ripple.className = 'ts-ripple';
+  const size = b.offsetWidth;
+  ripple.style.width = ripple.style.height = size + 'px';
+  ripple.style.left = '0px';
+  ripple.style.top = '0px';
+  b.appendChild(ripple);
+  setTimeout(()=>ripple.remove(), 600);
+
+  // Goal complete
+  if(ST.ts.cnt % ST.ts.goal === 0){
+    ST.ts.comp++;
+    if(navigator.vibrate) navigator.vibrate([50,30,50]);
+    // Golden flash on completion
+    b.style.borderColor = 'var(--gold-xl)';
+    b.style.boxShadow = '0 0 30px rgba(200,160,64,.6)';
+    setTimeout(()=>{ b.style.borderColor=''; b.style.boxShadow=''; }, 600);
+  }
   updateTasbeehUI();
 }
 function updateTasbeehUI(){
