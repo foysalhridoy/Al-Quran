@@ -3335,155 +3335,204 @@ function shareAyah(sn,an){
 }
 
 function shareAyahImage(sn,an){
-  const ay=ST.ayahs.find(a=>a.num===an),s=SD.find(x=>x.n===sn);
+  const ay=ST.ayahs.find(a=>a.num===an), s=SD.find(x=>x.n===sn);
   if(!ay||!s){showToast('আয়াত লোড হয়নি');return;}
 
-  const W=1080;
-  const PAD=80, AR_FS=68, BN_FS=28, LINE_AR=100, LINE_BN=44;
-  const TOP_AREA=60;
-  const BOTTOM_AREA=110; // branding
-  const DIV_AREA=70; // divider + spacing
-  const REF_AREA=80; // reference badge
+  // ── Theme detection ──
+  const isLight = document.documentElement.getAttribute('data-theme')==='light';
 
-  // ── Measure Arabic lines ──
-  const cvTmp=document.createElement('canvas');
-  const ctxT=cvTmp.getContext('2d');
-  ctxT.font=`${AR_FS}px "Amiri Quran","Amiri",serif`;
-  const arWords=ay.ar.split(' ');
-  let arLines=[],arLine='';
+  // ── Color palette based on theme ──
+  const colors = isLight ? {
+    bgTop:    '#faf6ee',
+    bgBot:    '#f0e8d4',
+    borderTop:'rgba(140,96,16,.9)',
+    borderSide:'rgba(140,96,16,.28)',
+    glow0:    'rgba(160,110,20,.12)',
+    ornament: 'rgba(140,96,16,.4)',
+    arText:   '#1a1006',
+    arShadow: 'rgba(140,96,16,.15)',
+    divider:  'rgba(140,96,16,.5)',
+    divLabel: 'rgba(120,80,10,.55)',
+    bnText:   '#2e2210',
+    refBg:    'rgba(140,96,16,.1)',
+    refBorder:'rgba(140,96,16,.45)',
+    refText:  'rgba(140,96,16,.9)',
+    brand1:   'rgba(140,96,16,.45)',
+    brand2:   'rgba(140,96,16,.25)',
+  } : {
+    bgTop:    '#0f1422',
+    bgBot:    '#090c13',
+    borderTop:'rgba(200,160,64,.88)',
+    borderSide:'rgba(200,160,64,.22)',
+    glow0:    'rgba(200,160,64,.1)',
+    ornament: 'rgba(200,160,64,.35)',
+    arText:   '#f8eed8',
+    arShadow: 'rgba(200,160,64,.18)',
+    divider:  'rgba(200,160,64,.55)',
+    divLabel: 'rgba(200,160,64,.48)',
+    bnText:   '#ccc4b0',
+    refBg:    'rgba(200,160,64,.1)',
+    refBorder:'rgba(200,160,64,.45)',
+    refText:  'rgba(220,185,90,.9)',
+    brand1:   'rgba(200,160,64,.42)',
+    brand2:   'rgba(200,160,64,.22)',
+  };
+
+  const W = 1080;
+  const PAD = 90;
+  const AR_FS = 68, BN_FS = 28, LINE_AR = 105, LINE_BN = 44;
+  const SEC_TOP = 52;   // top padding
+  const SEC_BOT = 90;   // bottom branding
+  const SEC_DIV = 60;   // divider + label
+  const SEC_REF = 76;   // reference badge
+  const SEC_GAP = 40;   // gap between bangla and ref
+
+  // ── Measure on temp canvas ──
+  const cvT = document.createElement('canvas');
+  const ctT = cvT.getContext('2d');
+
+  ctT.font = `${AR_FS}px "Amiri Quran","Amiri",serif`;
+  const arWords = ay.ar.split(' ');
+  let arLines=[], arLine='';
   for(const w of arWords){
-    const test=(arLine?arLine+' ':'')+w;
-    if(ctxT.measureText(test).width>W-PAD*2){if(arLine)arLines.push(arLine);arLine=w;}
-    else arLine=test;
+    const test = (arLine ? arLine+' ' : '') + w;
+    if(ctT.measureText(test).width > W - PAD*2){ if(arLine) arLines.push(arLine); arLine=w; }
+    else arLine = test;
   }
   if(arLine) arLines.push(arLine);
 
-  // ── Measure Bangla lines ──
-  ctxT.font=`${BN_FS}px "Noto Sans Bengali","Hind Siliguri",sans-serif`;
-  const bnWords=ay.bn.split(' ');
-  let bnLines=[],bnLine='';
+  ctT.font = `${BN_FS}px "Noto Sans Bengali","Hind Siliguri",sans-serif`;
+  const bnWords = ay.bn.split(' ');
+  let bnLines=[], bnLine='';
   for(const w of bnWords){
-    const test=(bnLine?bnLine+' ':'')+w;
-    if(ctxT.measureText(test).width>W-PAD*2){if(bnLine)bnLines.push(bnLine);bnLine=w;}
-    else bnLine=test;
+    const test = (bnLine ? bnLine+' ' : '') + w;
+    if(ctT.measureText(test).width > W - PAD*2){ if(bnLine) bnLines.push(bnLine); bnLine=w; }
+    else bnLine = test;
   }
   if(bnLine) bnLines.push(bnLine);
 
-  // ── Dynamic height ──
+  // ── Compute total content height ──
   const arBlockH = arLines.length * LINE_AR;
   const bnBlockH = bnLines.length * LINE_BN;
-  const H = Math.max(900, TOP_AREA + arBlockH + DIV_AREA + bnBlockH + REF_AREA + BOTTOM_AREA + 60);
+  const contentH = arBlockH + SEC_DIV + bnBlockH + SEC_GAP + SEC_REF;
 
-  const cv=document.createElement('canvas');
-  cv.width=W; cv.height=H;
-  const ctx=cv.getContext('2d');
+  // ── Canvas height: content centered with equal top/bottom padding ──
+  const minH = 900;
+  const H = Math.max(minH, SEC_TOP + contentH + SEC_BOT + 80);
 
-  // ── Background ──
-  const bgGrad=ctx.createLinearGradient(0,0,0,H);
-  bgGrad.addColorStop(0,'#0f1422'); bgGrad.addColorStop(1,'#090c13');
-  ctx.fillStyle=bgGrad;
+  // ── Vertical center offset ──
+  // Center the full content block within the available vertical space
+  const available = H - SEC_TOP - SEC_BOT;
+  const startY = SEC_TOP + Math.max(0, (available - contentH) / 2);
+
+  // ── Draw ──
+  const cv = document.createElement('canvas');
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+
+  // Background gradient
+  const bgGrad = ctx.createLinearGradient(0,0,0,H);
+  bgGrad.addColorStop(0, colors.bgTop);
+  bgGrad.addColorStop(1, colors.bgBot);
+  ctx.fillStyle = bgGrad;
   ctx.beginPath(); ctx.roundRect(0,0,W,H,36); ctx.fill();
 
   // Radial glow
-  const glow=ctx.createRadialGradient(W/2,H*0.15,0,W/2,H*0.4,H*0.75);
-  glow.addColorStop(0,'rgba(200,160,64,.1)'); glow.addColorStop(1,'transparent');
-  ctx.fillStyle=glow; ctx.fillRect(0,0,W,H);
+  const glow = ctx.createRadialGradient(W/2, H*0.15, 0, W/2, H*0.4, H*0.75);
+  glow.addColorStop(0, colors.glow0); glow.addColorStop(1,'transparent');
+  ctx.fillStyle = glow; ctx.fillRect(0,0,W,H);
 
-  // ── Gold border lines ──
-  const tLine=ctx.createLinearGradient(W*.08,0,W*.92,0);
-  tLine.addColorStop(0,'transparent'); tLine.addColorStop(.5,'rgba(200,160,64,.85)'); tLine.addColorStop(1,'transparent');
-  ctx.fillStyle=tLine;
-  ctx.fillRect(W*.08,0,W*.84,2.5);
-  ctx.fillRect(W*.08,H-2.5,W*.84,2.5);
+  // Top + bottom border lines
+  const tLine = ctx.createLinearGradient(W*.08,0,W*.92,0);
+  tLine.addColorStop(0,'transparent'); tLine.addColorStop(.5,colors.borderTop); tLine.addColorStop(1,'transparent');
+  ctx.fillStyle = tLine;
+  ctx.fillRect(W*.08, 0, W*.84, 2.5);
+  ctx.fillRect(W*.08, H-2.5, W*.84, 2.5);
 
-  // Side thin lines
-  const sLine=ctx.createLinearGradient(0,H*.1,0,H*.9);
-  sLine.addColorStop(0,'transparent'); sLine.addColorStop(.5,'rgba(200,160,64,.3)'); sLine.addColorStop(1,'transparent');
-  ctx.fillStyle=sLine;
-  ctx.fillRect(0,H*.1,2,H*.8);
-  ctx.fillRect(W-2,H*.1,2,H*.8);
+  // Side lines
+  const sLine = ctx.createLinearGradient(0,H*.08,0,H*.92);
+  sLine.addColorStop(0,'transparent'); sLine.addColorStop(.5,colors.borderSide); sLine.addColorStop(1,'transparent');
+  ctx.fillStyle = sLine;
+  ctx.fillRect(0, H*.08, 2, H*.84);
+  ctx.fillRect(W-2, H*.08, 2, H*.84);
 
   // ── Arabic ──
-  let curY = TOP_AREA;
-  ctx.font=`${AR_FS}px "Amiri Quran","Amiri",serif`;
-  ctx.fillStyle='#f8eed8';
-  ctx.textAlign='center'; ctx.direction='rtl'; ctx.textBaseline='middle';
+  let curY = startY;
+  ctx.font = `${AR_FS}px "Amiri Quran","Amiri",serif`;
+  ctx.fillStyle = colors.arText;
+  ctx.textAlign = 'center'; ctx.direction = 'rtl'; ctx.textBaseline = 'middle';
   arLines.forEach((l,i)=>{
-    ctx.shadowColor='rgba(200,160,64,.18)'; ctx.shadowBlur=24;
+    ctx.shadowColor = colors.arShadow; ctx.shadowBlur = 20;
     ctx.fillText(l, W/2, curY + i*LINE_AR + LINE_AR/2);
   });
-  ctx.shadowBlur=0;
-  curY += arLines.length * LINE_AR + 30;
+  ctx.shadowBlur = 0;
+  curY += arLines.length * LINE_AR + 22;
 
-  // ── Gold divider ──
-  ctx.direction='ltr'; ctx.textBaseline='alphabetic';
-  const dg=ctx.createLinearGradient(W*.15,curY,W*.85,curY);
-  dg.addColorStop(0,'transparent'); dg.addColorStop(.5,'rgba(200,160,64,.55)'); dg.addColorStop(1,'transparent');
-  ctx.strokeStyle=dg; ctx.lineWidth=1.5;
+  // ── Divider ──
+  ctx.direction = 'ltr'; ctx.textBaseline = 'alphabetic';
+  const dg = ctx.createLinearGradient(W*.15,curY,W*.85,curY);
+  dg.addColorStop(0,'transparent'); dg.addColorStop(.5,colors.divider); dg.addColorStop(1,'transparent');
+  ctx.strokeStyle = dg; ctx.lineWidth = 1.5;
   ctx.beginPath(); ctx.moveTo(W*.15,curY); ctx.lineTo(W*.85,curY); ctx.stroke();
 
-  // ── "বাংলা অনুবাদ" label ──
-  ctx.fillStyle='rgba(200,160,64,.45)';
-  ctx.font=`18px "Cinzel",serif`;
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('BANGLA TRANSLATION', W/2, curY+22);
-  curY += 50;
+  // Translation label
+  ctx.fillStyle = colors.divLabel;
+  ctx.font = `18px "Cinzel",serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('BANGLA TRANSLATION', W/2, curY+18);
+  curY += SEC_DIV;
 
   // ── Bangla ──
-  ctx.font=`${BN_FS}px "Noto Sans Bengali","Hind Siliguri",sans-serif`;
-  ctx.fillStyle='#ccc4b0';
-  ctx.textBaseline='middle';
+  ctx.font = `${BN_FS}px "Noto Sans Bengali","Hind Siliguri",sans-serif`;
+  ctx.fillStyle = colors.bnText;
+  ctx.textBaseline = 'middle';
   bnLines.forEach((l,i)=>{
     ctx.fillText(l, W/2, curY + i*LINE_BN + LINE_BN/2);
   });
-  curY += bnLines.length * LINE_BN + 50;
+  curY += bnLines.length * LINE_BN + SEC_GAP;
 
   // ── Reference badge ──
-  const refTxt=`${s.bn}  ·  আয়াত ${bn(an)}  ·  ${s.ar}`;
-  ctx.font=`bold 22px "Noto Sans Bengali","Amiri",sans-serif`;
-  ctx.textBaseline='middle';
-  const refW=ctx.measureText(refTxt).width + 64;
-  const refX=(W-refW)/2;
-  const refH=50;
-  // badge bg
-  ctx.fillStyle='rgba(200,160,64,.1)';
-  ctx.beginPath(); ctx.roundRect(refX,curY,refW,refH,25); ctx.fill();
-  ctx.strokeStyle='rgba(200,160,64,.45)'; ctx.lineWidth=1.2;
-  ctx.stroke();
-  ctx.fillStyle='rgba(220,185,90,.9)';
-  ctx.fillText(refTxt, W/2, curY+refH/2);
-  curY += refH + 40;
+  const refTxt = `${s.bn}  ·  আয়াত ${bn(an)}  ·  ${s.ar}`;
+  ctx.font = `bold 22px "Noto Sans Bengali","Amiri",sans-serif`;
+  ctx.textBaseline = 'middle';
+  const refW = ctx.measureText(refTxt).width + 64;
+  const refX = (W-refW)/2;
+  const refH = 50;
+  ctx.fillStyle = colors.refBg;
+  ctx.beginPath(); ctx.roundRect(refX, curY, refW, refH, 25); ctx.fill();
+  ctx.strokeStyle = colors.refBorder; ctx.lineWidth = 1.2; ctx.stroke();
+  ctx.fillStyle = colors.refText;
+  ctx.fillText(refTxt, W/2, curY + refH/2);
 
-  // ── Divider before branding ──
-  const bg2=ctx.createLinearGradient(W*.3,curY,W*.7,curY);
-  bg2.addColorStop(0,'transparent'); bg2.addColorStop(.5,'rgba(200,160,64,.2)'); bg2.addColorStop(1,'transparent');
-  ctx.strokeStyle=bg2; ctx.lineWidth=1;
-  ctx.beginPath(); ctx.moveTo(W*.3,curY); ctx.lineTo(W*.7,curY); ctx.stroke();
-  curY += 24;
+  // ── Branding (fixed at bottom) ──
+  const brandY = H - SEC_BOT + 10;
+  const bDiv = ctx.createLinearGradient(W*.3,brandY,W*.7,brandY);
+  bDiv.addColorStop(0,'transparent'); bDiv.addColorStop(.5,colors.borderSide); bDiv.addColorStop(1,'transparent');
+  ctx.strokeStyle = bDiv; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(W*.3,brandY); ctx.lineTo(W*.7,brandY); ctx.stroke();
 
-  // ── Branding ──
-  ctx.fillStyle='rgba(200,160,64,.4)';
-  ctx.font=`22px "Cinzel",serif`;
-  ctx.textBaseline='middle';
-  ctx.fillText('AL-QURAN BANGLA', W/2, curY+14);
-  ctx.fillStyle='rgba(200,160,64,.2)';
-  ctx.font=`16px "Noto Sans Bengali",sans-serif`;
-  ctx.fillText('পবিত্র কুরআন — বাংলা অনুবাদ ও তিলাওয়াত', W/2, curY+42);
+  ctx.fillStyle = colors.brand1;
+  ctx.font = `22px "Cinzel",serif`;
+  ctx.textBaseline = 'middle';
+  ctx.fillText('AL-QURAN BANGLA', W/2, brandY+20);
+  ctx.fillStyle = colors.brand2;
+  ctx.font = `16px "Noto Sans Bengali",sans-serif`;
+  ctx.fillText('পবিত্র কুরআন — বাংলা অনুবাদ ও তিলাওয়াত', W/2, brandY+46);
 
   // ── Export ──
   cv.toBlob(blob=>{
-    const file=new File([blob],`quran_${sn}_${an}.png`,{type:'image/png'});
+    const file = new File([blob],`quran_${sn}_${an}.png`,{type:'image/png'});
     if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({title:`${s.bn} — আয়াত ${an}`,files:[file]}).catch(()=>{});
+      navigator.share({title:`${s.bn} — আয়াত ${bn(an)}`, files:[file]}).catch(()=>{});
     } else {
-      const a=document.createElement('a');
-      a.href=URL.createObjectURL(blob);
-      a.download=`quran_${sn}_${an}.png`;
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `quran_${sn}_${an}.png`;
       a.click();
-      setTimeout(()=>URL.revokeObjectURL(a.href),60000);
+      setTimeout(()=>URL.revokeObjectURL(a.href), 60000);
       showToast('কার্ড ডাউনলোড হচ্ছে ✓');
     }
-  },'image/png',0.95);
+  }, 'image/png', 0.95);
 }
 
 function applyZoom(v){
