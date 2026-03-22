@@ -3007,6 +3007,8 @@ function playAyah(sn,an){
   document.querySelectorAll('.ayah-card').forEach(c=>c.classList.remove('playing'));
   document.getElementById(`ayah${an}`)?.classList.add('playing');
   if(npMinimized){updateMini();}else{openNP(sn,an);}
+  // Ensure DOM refs cached after render
+  requestAnimationFrame(_cacheAudioEls);
 }
 
 // ── Reciters ────────────────────────────────
@@ -3062,6 +3064,8 @@ function openNP(sn,an){
   document.getElementById('npPlayBtn').innerHTML=ST.audPlaying?PAUSE_SVG:PLAY_TXT;
   buildReciterUI();
   document.getElementById('npOverlay').classList.add('show');
+  // Cache DOM refs after overlay is visible
+  requestAnimationFrame(_cacheAudioEls);
 }
 
 function minimizeNP(){
@@ -3166,11 +3170,17 @@ function _cacheAudioEls(){
 audEl.addEventListener('timeupdate',()=>{
   if(!audEl.duration) return;
   const pct=(audEl.currentTime/audEl.duration)*100;
-  if(_fillEl)  _fillEl.style.width  = pct+'%';
-  if(_thumbEl) _thumbEl.style.left  = pct+'%';
-  if(_miniBarEl) _miniBarEl.style.width = pct+'%';
-  if(_timeEl) _timeEl.textContent = ft(audEl.currentTime);
-  if(_durEl)  _durEl.textContent  = ft(audEl.duration);
+  // Use cached refs, fallback to getElementById if not cached yet
+  const fill   = _fillEl   || (_fillEl   = document.getElementById('npProgBar'));
+  const thumb  = _thumbEl  || (_thumbEl  = document.getElementById('npSeekThumb'));
+  const mini   = _miniBarEl|| (_miniBarEl= document.getElementById('miniProgBar'));
+  const tEl    = _timeEl   || (_timeEl   = document.getElementById('npTimeEl'));
+  const dEl    = _durEl    || (_durEl    = document.getElementById('npDurEl'));
+  if(fill)  fill.style.width  = pct+'%';
+  if(thumb) thumb.style.left  = pct+'%';
+  if(mini)  mini.style.width  = pct+'%';
+  if(tEl)   tEl.textContent   = ft(audEl.currentTime);
+  if(dEl)   dEl.textContent   = ft(audEl.duration);
 },{passive:true});
 
 function npSeekClick(e){
