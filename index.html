@@ -81,6 +81,35 @@
   --scrollbar-t:#384060;
 }
 
+/* ═══ LIGHT THEME ═══ */
+[data-theme="light"] {
+  --bg-base:    #f5f0e8;
+  --bg-surface: #ede8dc;
+  --bg-card:    #e8e2d4;
+  --bg-sidebar: #ede8dc;
+  --bg-hover:   #ddd6c6;
+  --bg-active:  #d4ccb8;
+  --bg-input:   #e8e2d4;
+  --border:     rgba(120,90,40,0.12);
+  --border-md:  rgba(120,90,40,0.22);
+  --border-gld: rgba(160,110,20,0.4);
+  --text-h:     #1e1608;
+  --text-b:     #3a2e18;
+  --text-m:     #7a6840;
+  --text-ar:    #14100a;
+  --text-bn:    #2e2410;
+  --shadow-sm:  0 2px 14px rgba(100,70,10,0.12);
+  --shadow-md:  0 6px 30px rgba(100,70,10,0.18);
+  --shadow-lg:  0 14px 55px rgba(100,70,10,0.22);
+  --scrollbar:  #d4cbb8;
+  --scrollbar-t:#b0a080;
+  --gold:       #8a6010;
+  --gold-l:     #a87820;
+  --gold-xl:    #c8941a;
+  --gold-dim:   #6a4a0c;
+  --gold-glow:  rgba(140,96,16,0.2);
+}
+
 /* ═══════════════════════════════════════════════
    RESET & BASE
 ═══════════════════════════════════════════════ */
@@ -413,6 +442,36 @@ body {
 .btn-icon:hover::before { opacity:1 }
 .btn-icon.active { background:var(--bg-active); border-color:var(--gold); color:var(--gold-xl); }
 .btn-icon svg { width:13px; height:13px; flex-shrink:0 }
+
+/* ── Theme toggle button ── */
+.theme-btn {
+  width:36px; height:36px;
+  border-radius:50%;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-gld);
+  cursor: pointer;
+  display: flex; align-items:center; justify-content:center;
+  position: relative; overflow:hidden;
+  transition: all .3s var(--ease);
+  flex-shrink:0;
+  box-shadow: 0 0 0 0 var(--gold-glow);
+}
+.theme-btn:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 14px var(--gold-glow);
+  transform: rotate(30deg);
+}
+.theme-btn:active { transform: rotate(180deg) scale(.9); }
+.theme-btn svg { position:absolute; transition: all .35s var(--ease); }
+.theme-btn .sun-icon { opacity:0; transform:scale(.5) rotate(-90deg); }
+.theme-btn .moon-icon { opacity:1; transform:scale(1) rotate(0deg); }
+[data-theme="light"] .theme-btn .sun-icon { opacity:1; transform:scale(1) rotate(0deg); }
+[data-theme="light"] .theme-btn .moon-icon { opacity:0; transform:scale(.5) rotate(90deg); }
+[data-theme="light"] .theme-btn {
+  background: #e8dfc8;
+  border-color: rgba(140,96,16,.5);
+  box-shadow: 0 2px 8px rgba(140,96,16,.15);
+}
 
 
 /* ═══════════════════════════════════════════════
@@ -2026,6 +2085,24 @@ body {
       <div class="topbar-sm">বাংলা অনুবাদ ও তিলাওয়াত</div>
     </div>
     <div class="ctrl-group">
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="থিম পরিবর্তন">
+        <!-- Moon (dark mode icon) -->
+        <svg class="moon-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--gold-l)" stroke-width="1.8" stroke-linecap="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+        </svg>
+        <!-- Sun (light mode icon) -->
+        <svg class="sun-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--gold-l)" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
       <div class="zoom-ctrl" title="Arabic font zoom">
         <span class="zoom-icon">ع</span>
         <input type="range" class="zoom-slider" id="zoomSlider" min="1" max="5" value="3" oninput="applyZoom(this.value)">
@@ -2503,6 +2580,13 @@ const TLIST=[
 // INIT
 // ════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
+  // Restore theme
+  const savedTheme = localStorage.getItem('qtheme');
+  if(savedTheme === 'light'){
+    document.documentElement.setAttribute('data-theme','light');
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.content = '#f5f0e8';
+  }
   renderSurahList(SD);
   fillJuzOptions();
   buildPinnedGrid();
@@ -3075,6 +3159,16 @@ audEl.addEventListener('ended',()=>{
   audioNext();
 });
 function ft(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return`${m}:${String(sec).padStart(2,'0')}`;}
+
+function toggleTheme(){
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  const newTheme = isLight ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('qtheme', newTheme);
+  // Update meta theme-color
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.content = newTheme === 'light' ? '#f5f0e8' : '#0a0d12';
+}
 
 function goHome(){
   ST.cur=null;ST.ayahs=[];
