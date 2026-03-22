@@ -1335,6 +1335,58 @@ body {
 .np-prog { position:absolute; bottom:0; left:0; right:0; height:3px; background:var(--border); overflow:hidden; }
 .np-prog-bar { height:100%; background:linear-gradient(90deg,var(--gold-dim),var(--gold-xl)); width:0%; transition:width .1s linear; }
 
+/* Reciter Switcher */
+.np-reciter-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 0 18px;
+  flex-wrap: wrap;
+  position: relative;
+}
+.rec-btn {
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 1px solid var(--border-md);
+  background: var(--bg-card);
+  color: var(--text-m);
+  font-size: .68rem;
+  font-family: var(--font-bn);
+  cursor: pointer;
+  transition: all .18s var(--ease);
+  white-space: nowrap;
+}
+.rec-btn:hover { border-color: var(--border-gld); color: var(--gold-l); }
+.rec-btn.active {
+  background: linear-gradient(135deg, rgba(200,160,64,.18), rgba(200,160,64,.08));
+  border-color: var(--gold);
+  color: var(--gold-xl);
+  box-shadow: 0 0 10px var(--gold-glow);
+}
+/* Mini reciter select */
+.mini-rec-wrap {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+.mini-rec-btn {
+  padding: 3px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-m);
+  font-size: .58rem;
+  font-family: var(--font-bn);
+  cursor: pointer;
+  transition: all .15s;
+}
+.mini-rec-btn:hover { border-color: var(--border-gld); color: var(--gold-l); }
+.mini-rec-btn.active { border-color: var(--gold-dim); color: var(--gold-l); background: rgba(200,160,64,.1); }
+
 /* Mini player */
 .mini-player { position:fixed; bottom:76px; right:20px; z-index:799; display:none; flex-direction:column; background:var(--bg-surface); border:1px solid var(--border-gld); border-radius:16px; padding:12px 14px 10px; min-width:240px; max-width:290px; box-shadow:0 8px 32px rgba(0,0,0,.35),0 0 20px var(--gold-glow); animation:fadeUp .25s var(--ease); overflow:hidden; cursor:pointer; transition:transform .15s,box-shadow .15s; }
 .mini-player::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
@@ -1928,11 +1980,16 @@ body {
     <div class="np-divider"><span class="np-div-txt">বাংলা অনুবাদ — আবু বকর যাকারিয়া</span></div>
     <div class="np-bangla" id="npBangla">—</div>
     <div class="np-controls">
-      <button class="np-btn" onclick="audioPrev()">⏮</button>
+      <button class="np-btn" onclick="audioPrev()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2h2v5.5l7-5.5v11l-7-5.5V14H3z"/></svg>
+      </button>
       <button class="np-btn big" id="npPlayBtn" onclick="togglePlay();updateNPBtn()">⏸</button>
-      <button class="np-btn" onclick="audioNext()">⏭</button>
+      <button class="np-btn" onclick="audioNext()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M13 2h-2v5.5L4 2v12l7-5.5V14h2z"/></svg>
+      </button>
       <div class="np-prog"><div class="np-prog-bar" id="npProgBar"></div></div>
     </div>
+    <div class="np-reciter-wrap" id="npReciterWrap"></div>
   </div>
 </div>
 
@@ -1943,12 +2000,19 @@ body {
   <div class="mini-row">
     <span class="mini-info" id="miniInfo">—</span>
     <div class="mini-btns" onclick="event.stopPropagation()">
-      <button class="mini-btn" onclick="audioPrev()">⏮</button>
+      <button class="mini-btn" onclick="audioPrev()" title="আগের আয়াত">
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2h2v5.5l7-5.5v11l-7-5.5V14H3z"/></svg>
+      </button>
       <button class="mini-btn play" id="miniPlayBtn" onclick="togglePlay();updateNPBtn()">⏸</button>
-      <button class="mini-btn" onclick="audioNext()">⏭</button>
-      <button class="mini-btn" onclick="closeNP();closeAudio()" style="font-size:.65rem">✕</button>
+      <button class="mini-btn" onclick="audioNext()" title="পরের আয়াত">
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M13 2h-2v5.5L4 2v12l7-5.5V14h2z"/></svg>
+      </button>
+      <button class="mini-btn" onclick="closeNP();closeAudio()" style="font-size:.65rem;border-color:rgba(180,60,60,.3);color:rgba(200,80,80,.8)" title="বন্ধ করুন">
+        <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l10 10M11 1L1 11"/></svg>
+      </button>
     </div>
   </div>
+  <div class="mini-rec-wrap" id="miniReciterWrap" onclick="event.stopPropagation()"></div>
   <div class="mini-prog"><div class="mini-prog-bar" id="miniProgBar"></div></div>
   <div class="mini-expand-hint">▲ ট্যাপ করে বড় করুন</div>
 </div>
@@ -1963,7 +2027,13 @@ body {
       আমার বুকমার্ক
       <span id="bmPanelCount" style="font-size:.65rem;color:var(--gold-dim);background:var(--bg-card);border:1px solid var(--border-gld);border-radius:10px;padding:1px 8px;font-family:var(--font-deco)"></span>
     </div>
-    <button class="panel-close" onclick="closeBookmarks()">✕</button>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button id="bmClearBtn" onclick="clearAllBm()" style="display:none;font-size:.65rem;padding:4px 10px;border-radius:8px;border:1px solid rgba(180,60,60,.3);background:var(--bg-card);color:rgba(200,80,80,.8);cursor:pointer;font-family:var(--font-bn);transition:all .15s" onmouseover="this.style.background='rgba(180,60,60,.12)'" onmouseout="this.style.background='var(--bg-card)'">
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle;margin-right:3px"><path d="M3 4h10M6 4V2h4v2M5 4l1 9h4l1-9"/></svg>
+        সব মুছুন
+      </button>
+      <button class="panel-close" onclick="closeBookmarks()">✕</button>
+    </div>
   </div>
   <div class="panel-body" id="bmBody"></div>
 </div>
@@ -2588,6 +2658,42 @@ function playAyah(sn,an){
   if(npMinimized){updateMini();}else{openNP(sn,an);}
 }
 
+// ── Reciters ────────────────────────────────
+const RECITERS = [
+  { id:'Alafasy_128kbps',                    bn:'আলাফাসি' },
+  { id:'Abdurrahmaan_As-Sudais_192kbps',     bn:'সুদাইস' },
+  { id:'Husary_128kbps',                     bn:'হুসারি' },
+  { id:'Minshawy_Murattal_128kbps',          bn:'মিনশাওয়ি' },
+];
+
+function buildReciterUI(){
+  const npWrap   = document.getElementById('npReciterWrap');
+  const miniWrap = document.getElementById('miniReciterWrap');
+  if(!npWrap || !miniWrap) return;
+
+  const makeBtn = (r, cls, size) => {
+    const b = document.createElement('button');
+    b.className = cls + (ST.reciter === r.id ? ' active' : '');
+    b.textContent = r.bn;
+    b.dataset.id = r.id;
+    b.onclick = (e) => { e.stopPropagation(); changeReciter(r.id); };
+    return b;
+  };
+
+  npWrap.innerHTML = '';
+  miniWrap.innerHTML = '';
+  RECITERS.forEach(r => {
+    npWrap.appendChild(makeBtn(r, 'rec-btn'));
+    miniWrap.appendChild(makeBtn(r, 'mini-rec-btn'));
+  });
+}
+
+function refreshReciterUI(){
+  document.querySelectorAll('.rec-btn,.mini-rec-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.id === ST.reciter);
+  });
+}
+
 function openNP(sn,an){
   const s=SD.find(x=>x.n===sn);
   const ay=ST.ayahs.find(a=>a.num===an);
@@ -2599,10 +2705,16 @@ function openNP(sn,an){
   document.getElementById('npArabic').textContent=ay.ar;
   document.getElementById('npBangla').textContent=ay.bn||'';
   document.getElementById('npPlayBtn').innerHTML=ST.audPlaying?PAUSE_SVG:PLAY_TXT;
+  buildReciterUI();
   document.getElementById('npOverlay').classList.add('show');
 }
 
-function minimizeNP(){npMinimized=true;document.getElementById('npOverlay').classList.remove('show');updateMini();document.getElementById('miniPlayer').classList.add('show');}
+function minimizeNP(){
+  npMinimized=true;
+  document.getElementById('npOverlay').classList.remove('show');
+  updateMini();
+  document.getElementById('miniPlayer').classList.add('show');
+}
 function expandNP(){if(ST.audSn&&ST.audAyah) openNP(ST.audSn,ST.audAyah);}
 
 function updateMini(){
@@ -2614,6 +2726,7 @@ function updateMini(){
   setTimeout(()=>{arEl.textContent=ay.ar;bnEl.textContent=ay.bn||'';arEl.style.opacity='1';bnEl.style.opacity='1';},150);
   document.getElementById('miniInfo').textContent=`${s?s.bn:'—'} · আয়াত ${bn(ST.audAyah)}`;
   document.getElementById('miniPlayBtn').innerHTML=ST.audPlaying?PAUSE_SVG:PLAY_TXT;
+  buildReciterUI();
 }
 
 function updateNPBtn(){
@@ -2625,7 +2738,6 @@ function closeNP(){
   document.getElementById('npOverlay').classList.remove('show');
   document.getElementById('miniPlayer').classList.remove('show');
   npMinimized=false;
-  // X চাপলে audio bar ও বন্ধ হবে এবং audio stop হবে
   closeAudio();
 }
 
@@ -2636,10 +2748,42 @@ function togglePlay(){
 }
 
 function audioPrev(){if(ST.audAyah>1&&ST.audSn) playAyah(ST.audSn,ST.audAyah-1);}
-function audioNext(){if(!ST.audSn) return;const s=SD.find(x=>x.n===ST.audSn);if(s&&ST.audAyah<s.a) playAyah(ST.audSn,ST.audAyah+1);}
-function closeAudio(){audEl.pause();audEl.src='';ST.audPlaying=false;document.querySelectorAll('.ayah-card').forEach(c=>c.classList.remove('playing'));closeNP();}
+
+function audioNext(){
+  if(!ST.audSn) return;
+  const s=SD.find(x=>x.n===ST.audSn);
+  if(s && ST.audAyah < s.a){
+    playAyah(ST.audSn, ST.audAyah+1);
+  } else {
+    // সূরা শেষ — popup auto close
+    ST.audPlaying=false;
+    ['npPlayBtn','miniPlayBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=PLAY_TXT;});
+    document.querySelectorAll('.ayah-card').forEach(c=>c.classList.remove('playing'));
+    // Graceful close with small delay
+    setTimeout(()=>{
+      document.getElementById('npOverlay').classList.remove('show');
+      document.getElementById('miniPlayer').classList.remove('show');
+      npMinimized=false;
+      audEl.src='';
+    }, 600);
+  }
+}
+
+function closeAudio(){
+  audEl.pause();audEl.src='';ST.audPlaying=false;
+  document.querySelectorAll('.ayah-card').forEach(c=>c.classList.remove('playing'));
+  document.getElementById('npOverlay').classList.remove('show');
+  document.getElementById('miniPlayer').classList.remove('show');
+  npMinimized=false;
+}
+
 function seekAudio(v){if(audEl.duration) audEl.currentTime=(v/100)*audEl.duration;}
-function changeReciter(v){ST.reciter=v;if(ST.audSn&&ST.audAyah) playAyah(ST.audSn,ST.audAyah);}
+
+function changeReciter(v){
+  ST.reciter=v;
+  refreshReciterUI();
+  if(ST.audSn&&ST.audAyah) playAyah(ST.audSn,ST.audAyah);
+}
 
 audEl.addEventListener('timeupdate',()=>{
   if(audEl.duration){
@@ -2648,7 +2792,11 @@ audEl.addEventListener('timeupdate',()=>{
     document.getElementById('miniProgBar').style.width=pct+'%';
   }
 });
-audEl.addEventListener('ended',()=>{ST.audPlaying=false;['npPlayBtn','miniPlayBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=PLAY_TXT;});audioNext();});
+audEl.addEventListener('ended',()=>{
+  ST.audPlaying=false;
+  ['npPlayBtn','miniPlayBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=PLAY_TXT;});
+  audioNext();
+});
 function ft(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return`${m}:${String(sec).padStart(2,'0')}`;}
 
 function goHome(){
@@ -2684,10 +2832,21 @@ function toggleBm(sn,an){
 function updateBmCount(){document.getElementById('bmCountHero').textContent=bn(ST.bms.length);}
 function openBookmarks(){document.getElementById('bmOverlay').classList.add('show');document.getElementById('bmPanel').classList.add('show');renderBmPanel();}
 function closeBookmarks(){document.getElementById('bmOverlay').classList.remove('show');document.getElementById('bmPanel').classList.remove('show');}
+function clearAllBm(){
+  if(!ST.bms.length) return;
+  if(!confirm(`সব ${ST.bms.length} টি বুকমার্ক মুছে ফেলবেন?`)) return;
+  ST.bms=[];
+  localStorage.setItem('qbm3',JSON.stringify(ST.bms));
+  updateBmCount();
+  renderBmPanel();
+}
+
 function renderBmPanel(){
   const b = document.getElementById('bmBody');
   const countEl = document.getElementById('bmPanelCount');
+  const clearBtn = document.getElementById('bmClearBtn');
   if(countEl) countEl.textContent = ST.bms.length ? bn(ST.bms.length) : '';
+  if(clearBtn) clearBtn.style.display = ST.bms.length ? 'flex' : 'none';
 
   if(!ST.bms.length){
     b.innerHTML=`
@@ -2723,6 +2882,10 @@ function renderBmPanel(){
             <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
             পড়ুন
           </button>
+          <button class="bm-act-btn" style="border-color:rgba(90,130,200,.35);color:#7aa0d4" onclick="event.stopPropagation();copyBmAyah('${bm.k}',${bm.sn},${bm.an},'${bm.sbn.replace(/'/g,"\\'")}')">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M3 11V2h9"/></svg>
+            কপি
+          </button>
           <button class="bm-act-btn bm-act-del" onclick="event.stopPropagation();delBm('${bm.k}')">
             <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M6 4V2h4v2M5 4l1 9h4l1-9"/></svg>
             মুছুন
@@ -2730,6 +2893,13 @@ function renderBmPanel(){
         </div>
       </div>
     </div>`).join('');
+}
+
+function copyBmAyah(k, sn, an, sbn){
+  const bm = ST.bms.find(b=>b.k===k);
+  if(!bm) return;
+  const txt = `${bm.ar}\n\n${bm.bnTxt}\n\n— সূরা ${sbn}, আয়াত ${an}`;
+  navigator.clipboard.writeText(txt).then(()=>showToast('আয়াত কপি হয়েছে ✓')).catch(()=>showToast('কপি হয়নি'));
 }
 function goToBm(sn,an){closeBookmarks();loadSurah(sn);setTimeout(()=>{const el=document.getElementById(`ayah${an}`);if(el) el.scrollIntoView({behavior:'smooth',block:'center'});},800);}
 function delBm(k){ST.bms=ST.bms.filter(b=>b.k!==k);localStorage.setItem('qbm3',JSON.stringify(ST.bms));updateBmCount();renderBmPanel();}
