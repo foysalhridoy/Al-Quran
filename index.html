@@ -1274,10 +1274,42 @@ body {
 
 .sb-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:99; }
 
-.lr-badge { position:fixed; bottom:20px; right:20px; background:var(--bg-card); border:1px solid var(--border-gld); border-radius:var(--r-md); padding:13px 18px; z-index:9998; cursor:pointer; animation:fadeUp .5s var(--ease); box-shadow:var(--shadow-md),0 0 20px var(--gold-glow); max-width:210px; font-family:var(--font-bn); }
-.lr-label { font-size:.65rem; color:var(--gold-dim); margin-bottom:3px; letter-spacing:.05em; }
-.lr-name { font-size:.9rem; font-weight:600; color:var(--text-h); }
-.lr-sub { font-size:.7rem; color:var(--text-m); margin-top:2px; }
+.lr-badge {
+  position:fixed; bottom:24px; right:18px;
+  background: var(--bg-card);
+  border:1px solid var(--border-gld);
+  border-radius:14px;
+  padding:12px 16px 12px 14px;
+  z-index:9998; cursor:pointer;
+  animation:fadeUp .4s var(--ease);
+  box-shadow: var(--shadow-md), 0 0 20px var(--gold-glow);
+  max-width:200px;
+  font-family:var(--font-bn);
+  position:fixed;
+  transition: transform .18s, box-shadow .18s;
+  overflow:hidden;
+}
+.lr-badge::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.lr-badge:hover {
+  transform:translateY(-2px);
+  box-shadow: var(--shadow-md), 0 0 28px var(--gold-glow);
+}
+.lr-close {
+  position:absolute; top:7px; right:7px;
+  width:20px; height:20px; border-radius:50%;
+  background:var(--bg-surface); border:1px solid var(--border-md);
+  color:var(--text-m); cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .15s; z-index:2;
+}
+.lr-close:hover { background:rgba(200,80,80,.15); border-color:rgba(200,80,80,.4); color:#e07070; }
+.lr-label { font-size:.6rem; color:var(--gold-dim); margin-bottom:4px; letter-spacing:.05em; padding-right:14px; }
+.lr-name { font-size:.88rem; font-weight:700; color:var(--text-h); line-height:1.3; padding-right:8px; }
+.lr-sub { font-size:.66rem; color:var(--gold-dim); margin-top:5px; letter-spacing:.03em; }
 
 .toast-el { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:var(--bg-card); border:1px solid var(--border-gld); color:var(--text-h); padding:10px 22px; border-radius:9px; font-size:.83rem; z-index:9999; box-shadow:var(--shadow-md); font-family:var(--font-bn); animation:fadeUp .3s var(--ease); white-space:nowrap; display:none; }
 
@@ -3247,10 +3279,16 @@ function setupReadProgress(){
 function showLRBadge(){
   const s=SD.find(x=>x.n===ST.lr?.s);if(!s) return;
   const el=document.createElement('div');el.className='lr-badge';
-  el.innerHTML=`<div class="lr-label">📌 শেষ পড়া</div><div class="lr-name">${s.bn}</div><div class="lr-sub">চালিয়ে যান →</div>`;
+  el.innerHTML=`
+    <button class="lr-close" onclick="event.stopPropagation();this.parentNode.remove()" title="বন্ধ করুন">
+      <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l10 10M11 1L1 11"/></svg>
+    </button>
+    <div class="lr-label">📌 শেষ পড়া</div>
+    <div class="lr-name">${s.bn}</div>
+    <div class="lr-sub">চালিয়ে যান →</div>`;
   el.onclick=()=>{loadSurah(ST.lr.s);el.remove();};
   document.body.appendChild(el);
-  setTimeout(()=>{if(el.parentNode)el.remove();},8000);
+  setTimeout(()=>{if(el.parentNode)el.remove();},10000);
 }
 
 function showToast(msg){
