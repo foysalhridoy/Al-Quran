@@ -10,7 +10,7 @@
 <meta name="description" content="পবিত্র কুরআন — বাংলা অনুবাদ ও তিলাওয়াত সহ">
 <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;আল-কুরআন বাংলা&quot;,&quot;short_name&quot;:&quot;আল-কুরআন&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0a0d12&quot;,&quot;theme_color&quot;:&quot;#c8a040&quot;,&quot;description&quot;:&quot;পবিত্র কুরআন বাংলা অনুবাদ সহ&quot;}">
 <title>القرآن الكريم — আল-কুরআন বাংলা</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a0d12'/%3E%3Crect x='2' y='2' width='60' height='60' rx='10' fill='none' stroke='%23c8a040' stroke-width='1.5' opacity='.7'/%3E%3Cpolygon points='32,8 34.5,14 41,14 35.8,18 38,24 32,20 26,24 28.2,18 23,14 29.5,14' fill='%23e2bc5a' opacity='.8'/%3E%3Ctext x='32' y='44' font-family='Amiri,serif' font-size='18' fill='%23e2bc5a' text-anchor='middle' direction='rtl'%3Eالقرآن%3C/text%3E%3Cline x1='10' y1='50' x2='54' y2='50' stroke='%23c8a040' stroke-width='.8' opacity='.5'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23111827'/%3E%3Cstop offset='1' stop-color='%230a0d12'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23f2d060'/%3E%3Cstop offset='1' stop-color='%23c8a040'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23bg)'/%3E%3Crect x='1.5' y='1.5' width='61' height='61' rx='13' fill='none' stroke='url(%23gold)' stroke-width='1.5' opacity='.6'/%3E%3C!-- Open book shape --%3E%3Cpath d='M32 16 C28 16 18 18 14 22 L14 48 C18 45 28 44 32 44 C36 44 46 45 50 48 L50 22 C46 18 36 16 32 16 Z' fill='none' stroke='url(%23gold)' stroke-width='1.5' opacity='.9'/%3E%3Cline x1='32' y1='16' x2='32' y2='44' stroke='url(%23gold)' stroke-width='1.2' opacity='.7'/%3E%3C!-- Left page lines --%3E%3Cline x1='18' y1='27' x2='29' y2='26' stroke='%23c8a040' stroke-width='1' opacity='.5'/%3E%3Cline x1='18' y1='32' x2='29' y2='31' stroke='%23c8a040' stroke-width='1' opacity='.4'/%3E%3Cline x1='18' y1='37' x2='29' y2='36' stroke='%23c8a040' stroke-width='1' opacity='.3'/%3E%3C!-- Right page lines --%3E%3Cline x1='35' y1='26' x2='46' y2='27' stroke='%23c8a040' stroke-width='1' opacity='.5'/%3E%3Cline x1='35' y1='31' x2='46' y2='32' stroke='%23c8a040' stroke-width='1' opacity='.4'/%3E%3Cline x1='35' y1='36' x2='46' y2='37' stroke='%23c8a040' stroke-width='1' opacity='.3'/%3E%3C!-- Small star on spine --%3E%3Ccircle cx='32' cy='20' r='1.8' fill='url(%23gold)' opacity='.9'/%3E%3C!-- Bottom Arabic ق --%3E%3Ctext x='32' y='59' font-family='Amiri,serif' font-size='9' fill='%23c8a040' text-anchor='middle' opacity='.7'%3Eالقرآن%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Noto+Sans+Bengali:wght@400;600;700&family=Noto+Serif+Bengali:wght@400;600;700&family=Hind+Siliguri:wght@400;600;700&family=Playfair+Display:wght@600;700&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
@@ -3242,132 +3242,145 @@ function shareAyah(sn,an){
 
 function shareAyahImage(sn,an){
   const ay=ST.ayahs.find(a=>a.num===an),s=SD.find(x=>x.n===sn);
-  if(!ay||!s) return;
+  if(!ay||!s){showToast('আয়াত লোড হয়নি');return;}
 
-  const W=1080, H=1080;
+  const W=1080;
+  const PAD=80, AR_FS=68, BN_FS=28, LINE_AR=100, LINE_BN=44;
+  const TOP_AREA=60;
+  const BOTTOM_AREA=110; // branding
+  const DIV_AREA=70; // divider + spacing
+  const REF_AREA=80; // reference badge
+
+  // ── Measure Arabic lines ──
+  const cvTmp=document.createElement('canvas');
+  const ctxT=cvTmp.getContext('2d');
+  ctxT.font=`${AR_FS}px "Amiri Quran","Amiri",serif`;
+  const arWords=ay.ar.split(' ');
+  let arLines=[],arLine='';
+  for(const w of arWords){
+    const test=(arLine?arLine+' ':'')+w;
+    if(ctxT.measureText(test).width>W-PAD*2){if(arLine)arLines.push(arLine);arLine=w;}
+    else arLine=test;
+  }
+  if(arLine) arLines.push(arLine);
+
+  // ── Measure Bangla lines ──
+  ctxT.font=`${BN_FS}px "Noto Sans Bengali","Hind Siliguri",sans-serif`;
+  const bnWords=ay.bn.split(' ');
+  let bnLines=[],bnLine='';
+  for(const w of bnWords){
+    const test=(bnLine?bnLine+' ':'')+w;
+    if(ctxT.measureText(test).width>W-PAD*2){if(bnLine)bnLines.push(bnLine);bnLine=w;}
+    else bnLine=test;
+  }
+  if(bnLine) bnLines.push(bnLine);
+
+  // ── Dynamic height ──
+  const arBlockH = arLines.length * LINE_AR;
+  const bnBlockH = bnLines.length * LINE_BN;
+  const H = Math.max(900, TOP_AREA + arBlockH + DIV_AREA + bnBlockH + REF_AREA + BOTTOM_AREA + 60);
+
   const cv=document.createElement('canvas');
   cv.width=W; cv.height=H;
   const ctx=cv.getContext('2d');
 
   // ── Background ──
   const bgGrad=ctx.createLinearGradient(0,0,0,H);
-  bgGrad.addColorStop(0,'#0e1320');
-  bgGrad.addColorStop(1,'#090c13');
+  bgGrad.addColorStop(0,'#0f1422'); bgGrad.addColorStop(1,'#090c13');
   ctx.fillStyle=bgGrad;
-  ctx.beginPath();
-  ctx.roundRect(0,0,W,H,32);
-  ctx.fill();
+  ctx.beginPath(); ctx.roundRect(0,0,W,H,36); ctx.fill();
 
-  // Inner glow
-  const glow=ctx.createRadialGradient(W/2,0,0,W/2,H*.4,H*.7);
-  glow.addColorStop(0,'rgba(200,160,64,.11)');
-  glow.addColorStop(1,'transparent');
-  ctx.fillStyle=glow;
-  ctx.fillRect(0,0,W,H);
+  // Radial glow
+  const glow=ctx.createRadialGradient(W/2,H*0.15,0,W/2,H*0.4,H*0.75);
+  glow.addColorStop(0,'rgba(200,160,64,.1)'); glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow; ctx.fillRect(0,0,W,H);
 
-  // Top gold line
-  const tLine=ctx.createLinearGradient(W*.1,0,W*.9,0);
-  tLine.addColorStop(0,'transparent');
-  tLine.addColorStop(.5,'rgba(200,160,64,.9)');
-  tLine.addColorStop(1,'transparent');
+  // ── Gold border lines ──
+  const tLine=ctx.createLinearGradient(W*.08,0,W*.92,0);
+  tLine.addColorStop(0,'transparent'); tLine.addColorStop(.5,'rgba(200,160,64,.85)'); tLine.addColorStop(1,'transparent');
   ctx.fillStyle=tLine;
-  ctx.fillRect(W*.1,0,W*.8,2);
+  ctx.fillRect(W*.08,0,W*.84,2.5);
+  ctx.fillRect(W*.08,H-2.5,W*.84,2.5);
 
-  // Bottom gold line
-  ctx.fillStyle=tLine;
-  ctx.fillRect(W*.1,H-2,W*.8,2);
+  // Side thin lines
+  const sLine=ctx.createLinearGradient(0,H*.1,0,H*.9);
+  sLine.addColorStop(0,'transparent'); sLine.addColorStop(.5,'rgba(200,160,64,.3)'); sLine.addColorStop(1,'transparent');
+  ctx.fillStyle=sLine;
+  ctx.fillRect(0,H*.1,2,H*.8);
+  ctx.fillRect(W-2,H*.1,2,H*.8);
 
-  // ── Ornament top ──
-  ctx.fillStyle='rgba(200,160,64,.3)';
-  ctx.font=`36px serif`;
-  ctx.textAlign='center';
-  ctx.fillText('✦ ✦ ✦', W/2, 72);
-
-  // ── Arabic text ── (large, centered)
+  // ── Arabic ──
+  let curY = TOP_AREA;
+  ctx.font=`${AR_FS}px "Amiri Quran","Amiri",serif`;
   ctx.fillStyle='#f8eed8';
-  ctx.font=`72px "Amiri Quran","Amiri",serif`;
-  ctx.textAlign='center';
-  ctx.direction='rtl';
-  ctx.textBaseline='middle';
-
-  // Word wrap Arabic
-  const arWords=ay.ar.split(' ');
-  let arLines=[],arLine='';
-  for(const w of arWords){
-    const test=(arLine?arLine+' ':'')+w;
-    if(ctx.measureText(test).width > W-200){arLines.push(arLine);arLine=w;}
-    else arLine=test;
-  }
-  if(arLine) arLines.push(arLine);
-  arLines=arLines.slice(0,4);
-
-  const arBlockH=arLines.length*95;
-  const arStartY=H*0.35 - arBlockH/2;
+  ctx.textAlign='center'; ctx.direction='rtl'; ctx.textBaseline='middle';
   arLines.forEach((l,i)=>{
-    ctx.shadowColor='rgba(200,160,64,.2)';
-    ctx.shadowBlur=20;
-    ctx.fillText(l, W/2, arStartY+i*95);
+    ctx.shadowColor='rgba(200,160,64,.18)'; ctx.shadowBlur=24;
+    ctx.fillText(l, W/2, curY + i*LINE_AR + LINE_AR/2);
   });
   ctx.shadowBlur=0;
+  curY += arLines.length * LINE_AR + 30;
 
   // ── Gold divider ──
-  ctx.direction='ltr';
-  ctx.textBaseline='alphabetic';
-  const divY=arStartY+arLines.length*95+36;
-  const divGrad=ctx.createLinearGradient(W*.2,divY,W*.8,divY);
-  divGrad.addColorStop(0,'transparent');
-  divGrad.addColorStop(.5,'rgba(200,160,64,.5)');
-  divGrad.addColorStop(1,'transparent');
-  ctx.strokeStyle=divGrad; ctx.lineWidth=1.5;
-  ctx.beginPath(); ctx.moveTo(W*.2,divY); ctx.lineTo(W*.8,divY); ctx.stroke();
+  ctx.direction='ltr'; ctx.textBaseline='alphabetic';
+  const dg=ctx.createLinearGradient(W*.15,curY,W*.85,curY);
+  dg.addColorStop(0,'transparent'); dg.addColorStop(.5,'rgba(200,160,64,.55)'); dg.addColorStop(1,'transparent');
+  ctx.strokeStyle=dg; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(W*.15,curY); ctx.lineTo(W*.85,curY); ctx.stroke();
 
-  // ── Bangla translation ──
-  ctx.fillStyle='#c8c0ac';
-  ctx.font=`30px "Noto Sans Bengali","Hind Siliguri",sans-serif`;
-  ctx.textAlign='center';
-  const bnWords=ay.bn.split(' ');
-  let bnLines=[],bnLine='';
-  for(const w of bnWords){
-    const test=(bnLine?bnLine+' ':'')+w;
-    if(ctx.measureText(test).width>W-220){bnLines.push(bnLine);bnLine=w;}
-    else bnLine=test;
-  }
-  if(bnLine) bnLines.push(bnLine);
-  bnLines=bnLines.slice(0,4);
-  const bnY=divY+52;
-  bnLines.forEach((l,i)=>ctx.fillText(l, W/2, bnY+i*46));
+  // ── "বাংলা অনুবাদ" label ──
+  ctx.fillStyle='rgba(200,160,64,.45)';
+  ctx.font=`18px "Cinzel",serif`;
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('BANGLA TRANSLATION', W/2, curY+22);
+  curY += 50;
 
-  // ── Ayah reference badge ──
-  const refY=bnY+bnLines.length*46+56;
-  // Badge background
-  ctx.fillStyle='rgba(200,160,64,.12)';
-  const refTxt=`سورة ${s.ar}  ·  আয়াত ${bn(an)}  ·  ${s.bn}`;
-  ctx.font=`bold 24px "Noto Sans Bengali","Amiri",sans-serif`;
-  const refW=ctx.measureText(refTxt).width+60;
+  // ── Bangla ──
+  ctx.font=`${BN_FS}px "Noto Sans Bengali","Hind Siliguri",sans-serif`;
+  ctx.fillStyle='#ccc4b0';
+  ctx.textBaseline='middle';
+  bnLines.forEach((l,i)=>{
+    ctx.fillText(l, W/2, curY + i*LINE_BN + LINE_BN/2);
+  });
+  curY += bnLines.length * LINE_BN + 50;
+
+  // ── Reference badge ──
+  const refTxt=`${s.bn}  ·  আয়াত ${bn(an)}  ·  ${s.ar}`;
+  ctx.font=`bold 22px "Noto Sans Bengali","Amiri",sans-serif`;
+  ctx.textBaseline='middle';
+  const refW=ctx.measureText(refTxt).width + 64;
   const refX=(W-refW)/2;
-  ctx.beginPath();
-  ctx.roundRect(refX, refY-32, refW, 48, 24);
-  ctx.fill();
-  ctx.strokeStyle='rgba(200,160,64,.4)';
-  ctx.lineWidth=1;
+  const refH=50;
+  // badge bg
+  ctx.fillStyle='rgba(200,160,64,.1)';
+  ctx.beginPath(); ctx.roundRect(refX,curY,refW,refH,25); ctx.fill();
+  ctx.strokeStyle='rgba(200,160,64,.45)'; ctx.lineWidth=1.2;
   ctx.stroke();
-  ctx.fillStyle='rgba(200,160,64,.85)';
-  ctx.fillText(refTxt, W/2, refY);
+  ctx.fillStyle='rgba(220,185,90,.9)';
+  ctx.fillText(refTxt, W/2, curY+refH/2);
+  curY += refH + 40;
 
-  // ── Bottom branding ──
-  ctx.fillStyle='rgba(200,160,64,.35)';
-  ctx.font=`20px "Cinzel",serif`;
-  ctx.letterSpacing='4px';
-  ctx.fillText('AL-QURAN BANGLA', W/2, H-52);
-  ctx.fillStyle='rgba(200,160,64,.18)';
-  ctx.font=`15px "Cinzel",serif`;
-  ctx.fillText('পবিত্র কুরআন — বাংলা অনুবাদ', W/2, H-28);
+  // ── Divider before branding ──
+  const bg2=ctx.createLinearGradient(W*.3,curY,W*.7,curY);
+  bg2.addColorStop(0,'transparent'); bg2.addColorStop(.5,'rgba(200,160,64,.2)'); bg2.addColorStop(1,'transparent');
+  ctx.strokeStyle=bg2; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(W*.3,curY); ctx.lineTo(W*.7,curY); ctx.stroke();
+  curY += 24;
 
-  // ── Download / Share ──
+  // ── Branding ──
+  ctx.fillStyle='rgba(200,160,64,.4)';
+  ctx.font=`22px "Cinzel",serif`;
+  ctx.textBaseline='middle';
+  ctx.fillText('AL-QURAN BANGLA', W/2, curY+14);
+  ctx.fillStyle='rgba(200,160,64,.2)';
+  ctx.font=`16px "Noto Sans Bengali",sans-serif`;
+  ctx.fillText('পবিত্র কুরআন — বাংলা অনুবাদ ও তিলাওয়াত', W/2, curY+42);
+
+  // ── Export ──
   cv.toBlob(blob=>{
     const file=new File([blob],`quran_${sn}_${an}.png`,{type:'image/png'});
     if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({title:`${s.bn} — আয়াত ${an}`, files:[file]}).catch(()=>{});
+      navigator.share({title:`${s.bn} — আয়াত ${an}`,files:[file]}).catch(()=>{});
     } else {
       const a=document.createElement('a');
       a.href=URL.createObjectURL(blob);
@@ -3378,17 +3391,6 @@ function shareAyahImage(sn,an){
     }
   },'image/png',0.95);
 }
-
-// ════════════════════════════════════════════
-// ZOOM SLIDER (replaces A-/A/A+)
-// ════════════════════════════════════════════
-const ZOOM_STEPS=[
-  {fsA:1.2, fsBn:0.78, lbl:'XS'},
-  {fsA:1.4, fsBn:0.85, lbl:'S'},
-  {fsA:1.65,fsBn:0.9,  lbl:'A'},
-  {fsA:1.95,fsBn:1.0,  lbl:'L'},
-  {fsA:2.3, fsBn:1.12, lbl:'XL'}
-];
 
 function applyZoom(v){
   const z=ZOOM_STEPS[parseInt(v)-1];
