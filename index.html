@@ -813,6 +813,8 @@ body {
 }
 .ayah-btn:hover { background:var(--bg-hover); border-color:var(--border-md); color:var(--text-h); }
 .ayah-btn.bk-active { color:var(--gold-l); border-color:var(--gold-dim); }
+.ayah-btn.ayah-card-btn { border-color:rgba(90,130,200,.3); color:#8aabdc; }
+.ayah-btn.ayah-card-btn:hover { background:rgba(90,130,200,.1); border-color:rgba(90,130,200,.6); color:#a8c4e8; }
 .ayah-btn span.lbl { font-size:.68rem; font-family:var(--font-bn); }
 
 .ayah-btn.play-btn {
@@ -1360,30 +1362,42 @@ body {
 /* Header */
 .np-hd-row {
   display:flex; align-items:center; justify-content:space-between;
-  padding:14px 16px 12px;
-  border-bottom:1px solid rgba(200,160,64,.12);
+  padding:16px 18px 14px;
   position:relative; z-index:2;
 }
-.np-hd-title {
-  font-size:.54rem; font-family:var(--font-deco);
-  color:var(--gold-dim); letter-spacing:.22em;
-  flex:1; text-align:center;
-}
+/* No title */
+.np-hd-title { display:none; }
 .np-hd-btn {
   display:flex; align-items:center; justify-content:center; gap:5px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:20px; color:var(--text-m);
-  height:30px; padding:0 12px;
-  font-size:.67rem; font-family:var(--font-bn);
-  cursor:pointer; transition:all .18s; white-space:nowrap;
-  flex-shrink:0;
+  border-radius:10px;
+  height:32px; padding:0 13px;
+  font-size:.65rem; font-family:var(--font-bn);
+  cursor:pointer; transition:all .18s var(--ease);
+  white-space:nowrap; flex-shrink:0;
+  font-weight:600;
 }
 .np-hd-btn svg { flex-shrink:0; }
-.np-minimize-btn { border-color:rgba(34,128,104,.25); color:var(--teal-l); }
-.np-minimize-btn:hover { background:rgba(34,128,104,.12); border-color:rgba(34,128,104,.5); }
-.np-close-btn { border-color:rgba(200,80,80,.25); color:#c07070; }
-.np-close-btn:hover { background:rgba(200,80,80,.12); border-color:rgba(200,80,80,.5); color:#e08080; }
+.np-minimize-btn {
+  background:rgba(34,128,104,.1);
+  border:1px solid rgba(34,128,104,.3);
+  color:var(--teal-l);
+}
+.np-minimize-btn:hover {
+  background:rgba(34,128,104,.2);
+  border-color:rgba(34,128,104,.6);
+  transform:translateY(-1px);
+}
+.np-close-btn {
+  background:rgba(200,80,80,.1);
+  border:1px solid rgba(200,80,80,.3);
+  color:#d07070;
+}
+.np-close-btn:hover {
+  background:rgba(200,80,80,.2);
+  border-color:rgba(200,80,80,.6);
+  color:#e08080;
+  transform:translateY(-1px);
+}
 
 /* Meta row */
 .np-meta-row {
@@ -2144,17 +2158,12 @@ body {
     <!-- Header: minimize left, close right -->
     <div class="np-hd-row">
       <button class="np-hd-btn np-minimize-btn" onclick="minimizeNP()">
-        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M1 8l5-5 5 5"/>
-        </svg>
+        <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 8l6-6 6 6"/></svg>
         মিনিমাইজ
       </button>
-      <div class="np-hd-title">NOW PLAYING</div>
       <button class="np-hd-btn np-close-btn" onclick="closeNP()">
-        বন্ধ
-        <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M1 1l10 10M11 1L1 11"/>
-        </svg>
+        বন্ধ করুন
+        <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 1l10 10M11 1L1 11"/></svg>
       </button>
     </div>
 
@@ -2810,12 +2819,8 @@ function renderAyahs(s){
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M3 11V2h9"/></svg>
             <span class="lbl">কপি</span>
           </button>
-          <button class="ayah-btn" onclick="shareAyah(${s.n},${a.num})">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="3" r="1.5"/><circle cx="12" cy="13" r="1.5"/><circle cx="3" cy="8" r="1.5"/><path d="M10.5 3.9L4.5 7.1M10.5 12.1L4.5 8.9"/></svg>
-            <span class="lbl">শেয়ার</span>
-          </button>
-          <button class="ayah-btn" onclick="shareAyahImage(${s.n},${a.num})" title="কার্ড হিসেবে শেয়ার">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M2 9l3-3 3 3 3-4 3 4"/></svg>
+          <button class="ayah-btn ayah-card-btn" onclick="shareAyahImage(${s.n},${a.num})">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="14" height="10" rx="2"/><path d="M1 7h14M5 7v6"/><circle cx="5" cy="5" r=".8" fill="currentColor" stroke="none"/></svg>
             <span class="lbl">কার্ড</span>
           </button>
         </div>
@@ -3238,104 +3243,140 @@ function shareAyah(sn,an){
 function shareAyahImage(sn,an){
   const ay=ST.ayahs.find(a=>a.num===an),s=SD.find(x=>x.n===sn);
   if(!ay||!s) return;
-  const W=800,H=480;
+
+  const W=1080, H=1080;
   const cv=document.createElement('canvas');
-  cv.width=W;cv.height=H;
+  cv.width=W; cv.height=H;
   const ctx=cv.getContext('2d');
 
-  // Background
-  ctx.fillStyle='#0a0d12';
+  // ── Background ──
+  const bgGrad=ctx.createLinearGradient(0,0,0,H);
+  bgGrad.addColorStop(0,'#0e1320');
+  bgGrad.addColorStop(1,'#090c13');
+  ctx.fillStyle=bgGrad;
   ctx.beginPath();
-  ctx.roundRect(0,0,W,H,20);
+  ctx.roundRect(0,0,W,H,32);
   ctx.fill();
 
-  // Gold top border line
-  const grd=ctx.createLinearGradient(0,0,W,0);
-  grd.addColorStop(0,'transparent');
-  grd.addColorStop(.5,'#c8a040');
-  grd.addColorStop(1,'transparent');
-  ctx.fillStyle=grd;
-  ctx.fillRect(0,0,W,3);
-
-  // Subtle radial glow
-  const radial=ctx.createRadialGradient(W/2,0,0,W/2,0,H*0.7);
-  radial.addColorStop(0,'rgba(200,160,64,.09)');
-  radial.addColorStop(1,'transparent');
-  ctx.fillStyle=radial;
+  // Inner glow
+  const glow=ctx.createRadialGradient(W/2,0,0,W/2,H*.4,H*.7);
+  glow.addColorStop(0,'rgba(200,160,64,.11)');
+  glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow;
   ctx.fillRect(0,0,W,H);
 
-  // Surah name top center
-  ctx.fillStyle='rgba(200,160,64,.6)';
-  ctx.font=`500 13px "Cinzel", serif`;
-  ctx.textAlign='center';
-  ctx.fillText(`${s.bn}  ·  আয়াত ${an}`, W/2, 44);
+  // Top gold line
+  const tLine=ctx.createLinearGradient(W*.1,0,W*.9,0);
+  tLine.addColorStop(0,'transparent');
+  tLine.addColorStop(.5,'rgba(200,160,64,.9)');
+  tLine.addColorStop(1,'transparent');
+  ctx.fillStyle=tLine;
+  ctx.fillRect(W*.1,0,W*.8,2);
 
-  // Arabic text (right-to-left, wrapped)
-  ctx.fillStyle='#f5ede0';
-  ctx.font=`28px "Amiri Quran", "Amiri", serif`;
+  // Bottom gold line
+  ctx.fillStyle=tLine;
+  ctx.fillRect(W*.1,H-2,W*.8,2);
+
+  // ── Ornament top ──
+  ctx.fillStyle='rgba(200,160,64,.3)';
+  ctx.font=`36px serif`;
+  ctx.textAlign='center';
+  ctx.fillText('✦ ✦ ✦', W/2, 72);
+
+  // ── Arabic text ── (large, centered)
+  ctx.fillStyle='#f8eed8';
+  ctx.font=`72px "Amiri Quran","Amiri",serif`;
   ctx.textAlign='center';
   ctx.direction='rtl';
+  ctx.textBaseline='middle';
+
+  // Word wrap Arabic
   const arWords=ay.ar.split(' ');
   let arLines=[],arLine='';
   for(const w of arWords){
     const test=(arLine?arLine+' ':'')+w;
-    if(ctx.measureText(test).width>680){arLines.push(arLine);arLine=w;}
+    if(ctx.measureText(test).width > W-200){arLines.push(arLine);arLine=w;}
     else arLine=test;
   }
   if(arLine) arLines.push(arLine);
-  const arStartY=arLines.length<=2?160:140;
-  arLines.slice(0,3).forEach((l,i)=>{ctx.fillText(l,W/2,arStartY+i*52);});
+  arLines=arLines.slice(0,4);
 
-  // Divider
+  const arBlockH=arLines.length*95;
+  const arStartY=H*0.35 - arBlockH/2;
+  arLines.forEach((l,i)=>{
+    ctx.shadowColor='rgba(200,160,64,.2)';
+    ctx.shadowBlur=20;
+    ctx.fillText(l, W/2, arStartY+i*95);
+  });
+  ctx.shadowBlur=0;
+
+  // ── Gold divider ──
   ctx.direction='ltr';
-  const dy=arStartY+arLines.slice(0,3).length*52+18;
-  const dg=ctx.createLinearGradient(W*.2,dy,W*.8,dy);
-  dg.addColorStop(0,'transparent');dg.addColorStop(.5,'rgba(200,160,64,.35)');dg.addColorStop(1,'transparent');
-  ctx.strokeStyle=dg;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(W*.2,dy);ctx.lineTo(W*.8,dy);ctx.stroke();
+  ctx.textBaseline='alphabetic';
+  const divY=arStartY+arLines.length*95+36;
+  const divGrad=ctx.createLinearGradient(W*.2,divY,W*.8,divY);
+  divGrad.addColorStop(0,'transparent');
+  divGrad.addColorStop(.5,'rgba(200,160,64,.5)');
+  divGrad.addColorStop(1,'transparent');
+  ctx.strokeStyle=divGrad; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(W*.2,divY); ctx.lineTo(W*.8,divY); ctx.stroke();
 
-  // Bangla translation
-  ctx.fillStyle='#c8c0ae';
-  ctx.font=`16px "Noto Sans Bengali", "Hind Siliguri", sans-serif`;
+  // ── Bangla translation ──
+  ctx.fillStyle='#c8c0ac';
+  ctx.font=`30px "Noto Sans Bengali","Hind Siliguri",sans-serif`;
   ctx.textAlign='center';
-  const bnWords=ay.bn.split('');
-  let bnLines=[],bnCur='';
-  // Word wrap for Bangla
-  const bnWordArr=ay.bn.split(' ');
-  bnCur='';bnLines=[];
-  for(const w of bnWordArr){
-    const test=(bnCur?bnCur+' ':'')+w;
-    if(ctx.measureText(test).width>660){bnLines.push(bnCur);bnCur=w;}
-    else bnCur=test;
+  const bnWords=ay.bn.split(' ');
+  let bnLines=[],bnLine='';
+  for(const w of bnWords){
+    const test=(bnLine?bnLine+' ':'')+w;
+    if(ctx.measureText(test).width>W-220){bnLines.push(bnLine);bnLine=w;}
+    else bnLine=test;
   }
-  if(bnCur) bnLines.push(bnCur);
-  const bnY=dy+28;
-  bnLines.slice(0,3).forEach((l,i)=>{ctx.fillText(l,W/2,bnY+i*30);});
+  if(bnLine) bnLines.push(bnLine);
+  bnLines=bnLines.slice(0,4);
+  const bnY=divY+52;
+  bnLines.forEach((l,i)=>ctx.fillText(l, W/2, bnY+i*46));
 
-  // Bottom branding
-  ctx.fillStyle='rgba(200,160,64,.45)';
-  ctx.font=`11px "Cinzel", serif`;
-  ctx.textAlign='center';
-  ctx.fillText('AL-QURAN BANGLA', W/2, H-22);
+  // ── Ayah reference badge ──
+  const refY=bnY+bnLines.length*46+56;
+  // Badge background
+  ctx.fillStyle='rgba(200,160,64,.12)';
+  const refTxt=`سورة ${s.ar}  ·  আয়াত ${bn(an)}  ·  ${s.bn}`;
+  ctx.font=`bold 24px "Noto Sans Bengali","Amiri",sans-serif`;
+  const refW=ctx.measureText(refTxt).width+60;
+  const refX=(W-refW)/2;
+  ctx.beginPath();
+  ctx.roundRect(refX, refY-32, refW, 48, 24);
+  ctx.fill();
+  ctx.strokeStyle='rgba(200,160,64,.4)';
+  ctx.lineWidth=1;
+  ctx.stroke();
+  ctx.fillStyle='rgba(200,160,64,.85)';
+  ctx.fillText(refTxt, W/2, refY);
 
-  // Gold bottom border
-  ctx.fillStyle=grd;
-  ctx.fillRect(0,H-3,W,3);
+  // ── Bottom branding ──
+  ctx.fillStyle='rgba(200,160,64,.35)';
+  ctx.font=`20px "Cinzel",serif`;
+  ctx.letterSpacing='4px';
+  ctx.fillText('AL-QURAN BANGLA', W/2, H-52);
+  ctx.fillStyle='rgba(200,160,64,.18)';
+  ctx.font=`15px "Cinzel",serif`;
+  ctx.fillText('পবিত্র কুরআন — বাংলা অনুবাদ', W/2, H-28);
 
-  // Download or share
+  // ── Download / Share ──
   cv.toBlob(blob=>{
-    if(navigator.share && navigator.canShare && navigator.canShare({files:[new File([blob],'ayah.png',{type:'image/png'})]})){
-      navigator.share({
-        title:`কুরআন — ${s.bn} ${an}`,
-        files:[new File([blob],'ayah.png',{type:'image/png'})]
-      }).catch(()=>{});
+    const file=new File([blob],`quran_${sn}_${an}.png`,{type:'image/png'});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({title:`${s.bn} — আয়াত ${an}`, files:[file]}).catch(()=>{});
     } else {
       const a=document.createElement('a');
       a.href=URL.createObjectURL(blob);
       a.download=`quran_${sn}_${an}.png`;
       a.click();
-      showToast('আয়াত কার্ড ডাউনলোড হচ্ছে ✓');
+      setTimeout(()=>URL.revokeObjectURL(a.href),60000);
+      showToast('কার্ড ডাউনলোড হচ্ছে ✓');
     }
-  },'image/png');
+  },'image/png',0.95);
 }
 
 // ════════════════════════════════════════════
