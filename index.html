@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0d12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="আল-কুরআন">
+<meta name="description" content="পবিত্র কুরআন — বাংলা অনুবাদ ও তিলাওয়াত সহ">
+<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;আল-কুরআন বাংলা&quot;,&quot;short_name&quot;:&quot;আল-কুরআন&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0a0d12&quot;,&quot;theme_color&quot;:&quot;#c8a040&quot;,&quot;description&quot;:&quot;পবিত্র কুরআন বাংলা অনুবাদ সহ&quot;}">
 <title>القرآن الكريم — আল-কুরআন বাংলা</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a0d12'/%3E%3Crect x='2' y='2' width='60' height='60' rx='10' fill='none' stroke='%23c8a040' stroke-width='1.5' opacity='.7'/%3E%3Cpolygon points='32,8 34.5,14 41,14 35.8,18 38,24 32,20 26,24 28.2,18 23,14 29.5,14' fill='%23e2bc5a' opacity='.8'/%3E%3Ctext x='32' y='44' font-family='Amiri,serif' font-size='18' fill='%23e2bc5a' text-anchor='middle' direction='rtl'%3Eالقرآن%3C/text%3E%3Cline x1='10' y1='50' x2='54' y2='50' stroke='%23c8a040' stroke-width='.8' opacity='.5'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -79,6 +85,9 @@
    RESET & BASE
 ═══════════════════════════════════════════════ */
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+/* Remove blue/grey tap highlight on all mobile browsers */
+* { -webkit-tap-highlight-color: transparent; }
+button, [onclick] { -webkit-tap-highlight-color: transparent; outline:none; }
 html { scroll-behavior:smooth }
 body {
   font-family: 'Noto Sans Bengali','Hind Siliguri',sans-serif;
@@ -2805,6 +2814,10 @@ function renderAyahs(s){
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="3" r="1.5"/><circle cx="12" cy="13" r="1.5"/><circle cx="3" cy="8" r="1.5"/><path d="M10.5 3.9L4.5 7.1M10.5 12.1L4.5 8.9"/></svg>
             <span class="lbl">শেয়ার</span>
           </button>
+          <button class="ayah-btn" onclick="shareAyahImage(${s.n},${a.num})" title="কার্ড হিসেবে শেয়ার">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M2 9l3-3 3 3 3-4 3 4"/></svg>
+            <span class="lbl">কার্ড</span>
+          </button>
         </div>
       </div>
       <div class="ayah-body">
@@ -2844,6 +2857,29 @@ function renderAyahs(s){
 
 function nextSurah(){if(ST.cur<114) loadSurah(ST.cur+1);}
 function prevSurah(){if(ST.cur>1) loadSurah(ST.cur-1);}
+
+// ── Touch swipe navigation (surah view only) ──
+(function(){
+  let tx=0, ty=0;
+  const content = ()=>document.getElementById('contentArea');
+  document.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1) return;
+    tx=e.touches[0].clientX;
+    ty=e.touches[0].clientY;
+  },{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(!ST.cur) return; // only in surah view
+    const dx=e.changedTouches[0].clientX - tx;
+    const dy=e.changedTouches[0].clientY - ty;
+    // Must be horizontal swipe (dx > 60px, dy < 40px)
+    if(Math.abs(dx)<60 || Math.abs(dy)>40) return;
+    // Don't trigger if user scrolled or tapped on interactive elements
+    const tag = e.target.tagName;
+    if(['INPUT','SELECT','TEXTAREA','BUTTON','A'].includes(tag)) return;
+    if(dx < 0) nextSurah(); // swipe left → next
+    else prevSurah();       // swipe right → prev
+  },{passive:true});
+})();
 
 function jumpToAyah(){
   const n=parseInt(document.getElementById('jumpInput').value);
@@ -3197,6 +3233,109 @@ function shareAyah(sn,an){
   const txt=`${ay.ar}\n\n${ay.bn}\n\n— ${s.bn} (${sn}:${an})`;
   if(navigator.share) navigator.share({title:`কুরআন — ${s.bn}`,text:txt}).catch(()=>{});
   else navigator.clipboard.writeText(txt).then(()=>showToast('শেয়ার টেক্সট কপি হয়েছে ✓'));
+}
+
+function shareAyahImage(sn,an){
+  const ay=ST.ayahs.find(a=>a.num===an),s=SD.find(x=>x.n===sn);
+  if(!ay||!s) return;
+  const W=800,H=480;
+  const cv=document.createElement('canvas');
+  cv.width=W;cv.height=H;
+  const ctx=cv.getContext('2d');
+
+  // Background
+  ctx.fillStyle='#0a0d12';
+  ctx.beginPath();
+  ctx.roundRect(0,0,W,H,20);
+  ctx.fill();
+
+  // Gold top border line
+  const grd=ctx.createLinearGradient(0,0,W,0);
+  grd.addColorStop(0,'transparent');
+  grd.addColorStop(.5,'#c8a040');
+  grd.addColorStop(1,'transparent');
+  ctx.fillStyle=grd;
+  ctx.fillRect(0,0,W,3);
+
+  // Subtle radial glow
+  const radial=ctx.createRadialGradient(W/2,0,0,W/2,0,H*0.7);
+  radial.addColorStop(0,'rgba(200,160,64,.09)');
+  radial.addColorStop(1,'transparent');
+  ctx.fillStyle=radial;
+  ctx.fillRect(0,0,W,H);
+
+  // Surah name top center
+  ctx.fillStyle='rgba(200,160,64,.6)';
+  ctx.font=`500 13px "Cinzel", serif`;
+  ctx.textAlign='center';
+  ctx.fillText(`${s.bn}  ·  আয়াত ${an}`, W/2, 44);
+
+  // Arabic text (right-to-left, wrapped)
+  ctx.fillStyle='#f5ede0';
+  ctx.font=`28px "Amiri Quran", "Amiri", serif`;
+  ctx.textAlign='center';
+  ctx.direction='rtl';
+  const arWords=ay.ar.split(' ');
+  let arLines=[],arLine='';
+  for(const w of arWords){
+    const test=(arLine?arLine+' ':'')+w;
+    if(ctx.measureText(test).width>680){arLines.push(arLine);arLine=w;}
+    else arLine=test;
+  }
+  if(arLine) arLines.push(arLine);
+  const arStartY=arLines.length<=2?160:140;
+  arLines.slice(0,3).forEach((l,i)=>{ctx.fillText(l,W/2,arStartY+i*52);});
+
+  // Divider
+  ctx.direction='ltr';
+  const dy=arStartY+arLines.slice(0,3).length*52+18;
+  const dg=ctx.createLinearGradient(W*.2,dy,W*.8,dy);
+  dg.addColorStop(0,'transparent');dg.addColorStop(.5,'rgba(200,160,64,.35)');dg.addColorStop(1,'transparent');
+  ctx.strokeStyle=dg;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(W*.2,dy);ctx.lineTo(W*.8,dy);ctx.stroke();
+
+  // Bangla translation
+  ctx.fillStyle='#c8c0ae';
+  ctx.font=`16px "Noto Sans Bengali", "Hind Siliguri", sans-serif`;
+  ctx.textAlign='center';
+  const bnWords=ay.bn.split('');
+  let bnLines=[],bnCur='';
+  // Word wrap for Bangla
+  const bnWordArr=ay.bn.split(' ');
+  bnCur='';bnLines=[];
+  for(const w of bnWordArr){
+    const test=(bnCur?bnCur+' ':'')+w;
+    if(ctx.measureText(test).width>660){bnLines.push(bnCur);bnCur=w;}
+    else bnCur=test;
+  }
+  if(bnCur) bnLines.push(bnCur);
+  const bnY=dy+28;
+  bnLines.slice(0,3).forEach((l,i)=>{ctx.fillText(l,W/2,bnY+i*30);});
+
+  // Bottom branding
+  ctx.fillStyle='rgba(200,160,64,.45)';
+  ctx.font=`11px "Cinzel", serif`;
+  ctx.textAlign='center';
+  ctx.fillText('AL-QURAN BANGLA', W/2, H-22);
+
+  // Gold bottom border
+  ctx.fillStyle=grd;
+  ctx.fillRect(0,H-3,W,3);
+
+  // Download or share
+  cv.toBlob(blob=>{
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[new File([blob],'ayah.png',{type:'image/png'})]})){
+      navigator.share({
+        title:`কুরআন — ${s.bn} ${an}`,
+        files:[new File([blob],'ayah.png',{type:'image/png'})]
+      }).catch(()=>{});
+    } else {
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download=`quran_${sn}_${an}.png`;
+      a.click();
+      showToast('আয়াত কার্ড ডাউনলোড হচ্ছে ✓');
+    }
+  },'image/png');
 }
 
 // ════════════════════════════════════════════
