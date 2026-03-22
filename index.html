@@ -1284,13 +1284,45 @@ body {
 /* ═══════════════════════════════════════════════
    NOW PLAYING MODAL
 ═══════════════════════════════════════════════ */
-.np-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); z-index:800; display:none; align-items:center; justify-content:center; padding:20px; animation:fadeIn .22s var(--ease); }
+.np-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.72); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:800; display:none; align-items:center; justify-content:center; padding:20px; animation:fadeIn .22s var(--ease); }
 .np-overlay.show { display:flex; }
-.np-modal { background:var(--bg-surface); border:1px solid var(--border-gld); border-radius:22px; padding:0 30px 0; max-width:580px; width:100%; text-align:center; position:relative; box-shadow:0 24px 80px rgba(0,0,0,.55),0 0 50px var(--gold-glow); overflow:hidden; animation:npSlideUp .28s var(--ease); }
-.np-modal::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(184,145,42,.08) 0%,transparent 65%); pointer-events:none; }
-.np-modal::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold-l),transparent); }
+.np-modal {
+  background: linear-gradient(160deg, #161e30, #0f1420);
+  border: 1px solid rgba(200,160,64,.35);
+  border-radius: 26px;
+  padding: 0 28px 0;
+  max-width: 560px; width: 100%;
+  text-align: center;
+  position: relative;
+  box-shadow:
+    0 32px 80px rgba(0,0,0,.65),
+    0 0 0 1px rgba(200,160,64,.08),
+    0 0 60px rgba(200,160,64,.12),
+    inset 0 1px 0 rgba(255,255,255,.06);
+  overflow: hidden;
+  animation: npSlideUp .38s cubic-bezier(.34,1.36,.64,1) both;
+}
+.np-modal::before {
+  content:'';
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse at 50% -20%, rgba(200,160,64,.14) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(26,96,80,.08) 0%, transparent 50%);
+  pointer-events:none; z-index:0;
+}
+.np-modal::after {
+  content:'';
+  position:absolute; top:0; left:20%; right:20%; height:2px;
+  background: linear-gradient(90deg, transparent, var(--gold-l), transparent);
+  border-radius:0 0 4px 4px;
+}
 /* Header row — now in normal flow, not absolute */
-.np-hd-row { position:relative; display:flex; align-items:center; justify-content:space-between; z-index:3; padding:12px 4px 10px; border-bottom:1px solid var(--border); margin:0 -30px; padding-left:16px; padding-right:16px; }
+.np-hd-row {
+  position:relative; display:flex; align-items:center; justify-content:space-between;
+  z-index:3; padding:14px 16px 12px;
+  border-bottom:1px solid rgba(200,160,64,.12);
+  margin:0 -28px; background:rgba(0,0,0,.15);
+}
 .np-hd-btn {
   background: var(--bg-card);
   border: 1px solid var(--border-md);
@@ -1319,20 +1351,65 @@ body {
 .np-hd-btn.close-btn:hover::before { opacity:1 }
 .np-hd-btn svg { flex-shrink:0; position:relative; }
 .np-hd-btn span { position:relative; }
-.np-surah-info { font-size:.66rem; color:var(--gold-dim); text-transform:uppercase; letter-spacing:.18em; font-family:var(--font-deco); margin-bottom:6px; margin-top:16px; position:relative; }
-.np-ayah-badge { display:inline-flex; align-items:center; justify-content:center; width:42px; height:42px; border:1.5px solid var(--border-gld); border-radius:50%; font-family:var(--font-deco); font-size:.82rem; color:var(--gold-l); background:var(--bg-card); margin:0 auto 14px; position:relative; box-shadow:0 0 16px var(--gold-glow); }
-.np-arabic { font-family:var(--font-ar); direction:rtl; font-size:clamp(1.4rem,3.2vw,2rem); color:var(--text-ar); line-height:2.2; margin-bottom:20px; position:relative; text-shadow:0 0 18px rgba(184,145,42,.1); transition:opacity .35s ease; }
-.np-divider { display:flex; align-items:center; gap:10px; margin-bottom:14px; position:relative; }
-.np-divider::before,.np-divider::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--border-md)); }
-.np-divider::after { background:linear-gradient(270deg,transparent,var(--border-md)); }
-.np-div-txt { font-size:.57rem; color:var(--text-m); letter-spacing:.12em; text-transform:uppercase; font-family:var(--font-deco); white-space:nowrap; }
-.np-bangla { font-family:var(--font-bn); font-size:clamp(.9rem,1.8vw,1.05rem); color:var(--text-bn); line-height:2; position:relative; padding:0 6px; transition:opacity .35s ease; }
-.np-controls { display:flex; align-items:center; justify-content:center; gap:10px; margin:22px 0 0; padding:16px 0 20px; border-top:1px solid var(--border); position:relative; }
-.np-btn { background:var(--bg-card); border:1px solid var(--border-md); border-radius:50%; color:var(--text-b); width:38px; height:38px; cursor:pointer; font-size:.9rem; display:flex; align-items:center; justify-content:center; transition:all .15s; }
-.np-btn:hover { border-color:var(--border-gld); color:var(--gold-xl); }
-.np-btn.big { width:50px; height:50px; background:var(--gold); border-color:var(--gold); color:#000; font-size:1.1rem; box-shadow:0 4px 18px rgba(184,145,42,.4); }
-.np-btn.big:hover { background:var(--gold-xl); }
-.np-prog { position:absolute; bottom:0; left:0; right:0; height:3px; background:var(--border); overflow:hidden; }
+.np-surah-info {
+  font-size:.65rem; color:var(--gold-dim); letter-spacing:.2em;
+  font-family:var(--font-deco); text-transform:uppercase;
+  margin-bottom:8px; margin-top:20px; position:relative; z-index:1;
+}
+.np-ayah-badge {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:48px; height:48px;
+  border:1.5px solid var(--gold); border-radius:50%;
+  font-family:var(--font-deco); font-size:.88rem; color:var(--gold-l);
+  background:radial-gradient(circle, rgba(200,160,64,.1), var(--bg-card));
+  margin:0 auto 16px; position:relative; z-index:1;
+  box-shadow:0 0 20px var(--gold-glow), inset 0 0 12px rgba(200,160,64,.05);
+  animation:npBadgePulse 2.5s ease infinite;
+}
+.np-arabic {
+  font-family:var(--font-ar); direction:rtl;
+  font-size:clamp(1.45rem,3.2vw,2.1rem); color:var(--text-ar);
+  line-height:2.2; margin-bottom:20px; position:relative; z-index:1;
+  text-shadow:0 0 30px rgba(200,160,64,.15), 0 2px 4px rgba(0,0,0,.3);
+  transition:opacity .35s ease;
+  animation:npAyahIn .4s var(--ease) .1s both;
+}
+.np-divider { display:flex; align-items:center; gap:10px; margin-bottom:14px; position:relative; z-index:1; }
+.np-divider::before,.np-divider::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,transparent,rgba(200,160,64,.2)); }
+.np-divider::after { background:linear-gradient(270deg,transparent,rgba(200,160,64,.2)); }
+.np-div-txt { font-size:.6rem; color:var(--gold-dim); font-family:var(--font-deco); letter-spacing:.12em; white-space:nowrap; }
+.np-bangla {
+  font-family:var(--font-bn); font-size:clamp(.88rem,1.8vw,1rem);
+  color:var(--text-bn); line-height:2;
+  position:relative; z-index:1; padding:0 6px;
+  transition:opacity .35s ease;
+  animation:npAyahIn .4s var(--ease) .2s both;
+}
+.np-controls {
+  display:flex; align-items:center; justify-content:center;
+  gap:12px; padding:18px 28px 20px;
+  border-top:1px solid rgba(200,160,64,.1);
+  position:relative; z-index:1;
+  background:rgba(0,0,0,.12);
+  margin:20px -28px 0;
+}
+.np-btn {
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+  border-radius:50%; color:var(--text-b);
+  width:40px; height:40px; cursor:pointer; font-size:.9rem;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .18s var(--ease);
+}
+.np-btn:hover { border-color:var(--border-gld); color:var(--gold-xl); background:rgba(200,160,64,.1); transform:scale(1.08); }
+.np-btn.big {
+  width:54px; height:54px;
+  background:linear-gradient(135deg, var(--gold), var(--gold-dim));
+  border:none; color:#0a0d12; font-size:1.1rem;
+  box-shadow:0 4px 20px rgba(200,160,64,.45);
+}
+.np-btn.big:hover { background:linear-gradient(135deg, var(--gold-xl), var(--gold-l)); transform:scale(1.1); box-shadow:0 6px 28px rgba(200,160,64,.6); }
+.np-btn.big:active { transform:scale(.95); }
+.np-prog { position:absolute; bottom:0; left:0; right:0; height:3px; background:rgba(255,255,255,.06); overflow:hidden; }
 .np-prog-bar { height:100%; background:linear-gradient(90deg,var(--gold-dim),var(--gold-xl)); width:0%; transition:width .1s linear; }
 
 /* Reciter Switcher */
@@ -1559,7 +1636,21 @@ body {
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 @keyframes spin { to{transform:rotate(360deg)} }
-@keyframes npSlideUp { from{opacity:0;transform:translateY(22px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+@keyframes npSlideUp {
+  0%   { opacity:0; transform:translateY(40px) scale(.93); filter:blur(6px); }
+  60%  { opacity:1; transform:translateY(-4px) scale(1.01); filter:blur(0); }
+  100% { opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
+}
+@keyframes npAyahIn {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes npBadgePulse {
+  0%   { box-shadow:0 0 0 0 rgba(200,160,64,.5); transform:scale(1); }
+  50%  { box-shadow:0 0 0 10px rgba(200,160,64,0); transform:scale(1.08); }
+  100% { box-shadow:0 0 0 0 rgba(200,160,64,0); transform:scale(1); }
+}
+@keyframes npGeoSpin { to { transform:rotate(360deg); } }
 @keyframes pulse { 0%{box-shadow:0 0 0 0 var(--gold-glow)} 50%{box-shadow:0 0 0 8px transparent} 100%{box-shadow:none} }
 
 /* ═══════════════════════════════════════════════
@@ -2808,7 +2899,8 @@ function goHome(){
   document.getElementById('topbarTitle').innerHTML=`<div class="topbar-sn">পবিত্র কুরআন</div><div class="topbar-sm">বাংলা অনুবাদ ও তিলাওয়াত</div>`;
   document.querySelectorAll('.surah-item').forEach(el=>el.classList.remove('active'));
   document.getElementById('contentArea').scrollTop=0;
-  closeAudio();
+  // Minimize করা থাকলে audio চলতে থাকবে — শুধু নতুন সূরায় গেলে বন্ধ হবে
+  if(!npMinimized) closeAudio();
 }
 
 function toggleBm(sn,an){
@@ -2874,7 +2966,7 @@ function renderBmPanel(){
         <div class="bm-ar">${bm.ar}…</div>
         <div class="bm-bn">${bm.bnTxt}…</div>
         <div class="bm-acts">
-          <button class="bm-act-btn bm-act-play" onclick="event.stopPropagation();playAyah(${bm.sn},${bm.an});closeBookmarks()">
+          <button class="bm-act-btn bm-act-play" onclick="event.stopPropagation();closeBookmarks();playBmAyah(${bm.sn},${bm.an})">
             <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M4 3l10 5-10 5V3z"/></svg>
             শুনুন
           </button>
@@ -2901,7 +2993,53 @@ function copyBmAyah(k, sn, an, sbn){
   const txt = `${bm.ar}\n\n${bm.bnTxt}\n\n— সূরা ${sbn}, আয়াত ${an}`;
   navigator.clipboard.writeText(txt).then(()=>showToast('আয়াত কপি হয়েছে ✓')).catch(()=>showToast('কপি হয়নি'));
 }
-function goToBm(sn,an){closeBookmarks();loadSurah(sn);setTimeout(()=>{const el=document.getElementById(`ayah${an}`);if(el) el.scrollIntoView({behavior:'smooth',block:'center'});},800);}
+function playBmAyah(sn, an){
+  // If same surah loaded — play directly
+  if(ST.cur === sn && ST.ayahs.length){
+    npMinimized = false;
+    playAyah(sn, an);
+    return;
+  }
+  // Different surah — load first then play
+  loadSurah(sn);
+  const waitAndPlay = (tries=0) => {
+    const ayahLoaded = ST.ayahs.find(a=>a.num===an);
+    if(ayahLoaded){
+      npMinimized = false;
+      playAyah(sn, an);
+    } else if(tries < 25){
+      setTimeout(()=>waitAndPlay(tries+1), 200);
+    }
+  };
+  setTimeout(()=>waitAndPlay(), 500);
+}
+
+function goToBm(sn,an){
+  closeBookmarks();
+  // Same surah already loaded — just scroll
+  if(ST.cur === sn && ST.ayahs.length) {
+    const el = document.getElementById(`ayah${an}`);
+    if(el){
+      el.scrollIntoView({behavior:'smooth', block:'center'});
+      el.classList.add('highlighted');
+      setTimeout(()=>el.classList.remove('highlighted'), 2000);
+    }
+    return;
+  }
+  // Different surah — load then scroll
+  loadSurah(sn);
+  const waitForAyah = (tries=0) => {
+    const el = document.getElementById(`ayah${an}`);
+    if(el){
+      el.scrollIntoView({behavior:'smooth', block:'center'});
+      el.classList.add('highlighted');
+      setTimeout(()=>el.classList.remove('highlighted'), 2000);
+    } else if(tries < 20){
+      setTimeout(()=>waitForAyah(tries+1), 150);
+    }
+  };
+  setTimeout(()=>waitForAyah(), 400);
+}
 function delBm(k){ST.bms=ST.bms.filter(b=>b.k!==k);localStorage.setItem('qbm3',JSON.stringify(ST.bms));updateBmCount();renderBmPanel();}
 
 function copyAyah(an){
