@@ -1405,6 +1405,7 @@ body {
   position: relative;
   box-shadow: 0 20px 60px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06);
   animation: npSlideUp .32s cubic-bezier(.22,1,.36,1) both;
+  will-change: transform, opacity;
   /* Ensure header buttons never clip */
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
@@ -2623,21 +2624,25 @@ function buildPinnedGrid(){
   }).join('');
 }
 
+let _searchTimer=null;
 function heroSearchFn(q){
-  const resEl=document.getElementById('heroSearchRes');
-  if(!q.trim()){resEl.classList.remove('show');return;}
-  const qq=q.toLowerCase().trim();
-  const starts=SD.filter(s=>s.bn.toLowerCase().startsWith(qq)||s.en.toLowerCase().startsWith(qq)||String(s.n)===qq);
-  const rest=SD.filter(s=>!starts.includes(s)&&(s.bn.toLowerCase().includes(qq)||s.en.toLowerCase().includes(qq)||s.ar.includes(q)||s.m.includes(q)||String(s.n).includes(qq)));
-  const results=[...starts,...rest].slice(0,10);
-  if(!results.length){resEl.innerHTML='<div style="padding:14px;color:var(--text-m);font-size:.82rem;text-align:center">কোনো সূরা পাওয়া যায়নি</div>';resEl.classList.add('show');return;}
-  resEl.innerHTML=results.map(s=>`
+  clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(()=>{
+    const resEl=document.getElementById('heroSearchRes');
+    if(!q.trim()){resEl.classList.remove('show');return;}
+    const qq=q.toLowerCase().trim();
+    const starts=SD.filter(s=>s.bn.toLowerCase().startsWith(qq)||s.en.toLowerCase().startsWith(qq)||String(s.n)===qq);
+    const rest=SD.filter(s=>!starts.includes(s)&&(s.bn.toLowerCase().includes(qq)||s.en.toLowerCase().includes(qq)));
+    const res=[...starts,...rest].slice(0,8);
+    if(!res.length){resEl.classList.remove('show');return;}
+    resEl.innerHTML=res.map(s=>`
     <div class="hsr-item" onmousedown="loadSurah(${s.n});document.getElementById('heroSearch').value='';document.getElementById('heroSearchRes').classList.remove('show')">
-      <div class="hsr-num">${bn(s.n)}</div>
-      <div><div class="hsr-bn">${s.bn}</div><div class="hsr-en">${s.en} · ${s.t==='M'?'মক্কি':'মাদানি'} · ${bn(s.a)} আয়াত</div></div>
-      <div class="hsr-ar">${s.ar}</div>
+      <span class="hsr-num">${bn(s.n)}</span>
+      <div class="hsr-info"><div class="hsr-bn">${s.bn}</div><div class="hsr-en">${s.en}</div></div>
+      <span class="hsr-ar">${s.ar}</span>
     </div>`).join('');
-  resEl.classList.add('show');
+    resEl.classList.add('show');
+  }, 100);
 }
 
 function scrollSearchIntoView(){
@@ -3004,24 +3009,24 @@ const RECITERS = [
 ];
 
 function buildReciterUI(){
-  const npWrap   = document.getElementById('npReciterWrap');
+  const npWrap = document.getElementById('npReciterWrap');
   const miniWrap = document.getElementById('miniReciterWrap');
   if(!npWrap || !miniWrap) return;
-
-  const makeBtn = (r, cls, size) => {
-    const b = document.createElement('button');
-    b.className = cls + (ST.reciter === r.id ? ' active' : '');
-    b.textContent = r.bn;
-    b.dataset.id = r.id;
-    b.onclick = (e) => { e.stopPropagation(); changeReciter(r.id); };
-    return b;
-  };
-
+  // Only build if empty
+  if(npWrap.children.length === RECITERS.length) { refreshReciterUI(); return; }
   npWrap.innerHTML = '';
   miniWrap.innerHTML = '';
   RECITERS.forEach(r => {
-    npWrap.appendChild(makeBtn(r, 'rec-btn'));
-    miniWrap.appendChild(makeBtn(r, 'mini-rec-btn'));
+    const nb = document.createElement('button');
+    nb.className = 'rec-btn' + (ST.reciter===r.id?' active':'');
+    nb.textContent = r.bn; nb.dataset.id = r.id;
+    nb.onclick = e => { e.stopPropagation(); changeReciter(r.id); };
+    npWrap.appendChild(nb);
+    const mb = document.createElement('button');
+    mb.className = 'mini-rec-btn' + (ST.reciter===r.id?' active':'');
+    mb.textContent = r.bn; mb.dataset.id = r.id;
+    mb.onclick = e => { e.stopPropagation(); changeReciter(r.id); };
+    miniWrap.appendChild(mb);
   });
 }
 
@@ -3123,28 +3128,41 @@ function closeAudio(){
 function seekAudio(v){if(audEl.duration) audEl.currentTime=(v/100)*audEl.duration;}
 
 function changeReciter(v){
-  ST.reciter=v;
+  if(ST.reciter === v) return; // same reciter — no-op
+  ST.reciter = v;
   refreshReciterUI();
-  if(ST.audSn&&ST.audAyah) playAyah(ST.audSn,ST.audAyah);
+  if(ST.audSn && ST.audAyah){
+    const wasPlaying = ST.audPlaying;
+    audEl.src = `https://everyayah.com/data/${v}/${String(ST.audSn).padStart(3,'0')}${String(ST.audAyah).padStart(3,'0')}.mp3`;
+    audEl.load();
+    if(wasPlaying){ audEl.play().catch(()=>{}); ST.audPlaying=true; }
+  }
+}
+
+// Cache DOM refs for timeupdate (avoids getElementById every frame)
+const _npFill  = ()=>document.getElementById('npProgBar');
+const _npThumb = ()=>document.getElementById('npSeekThumb');
+const _miniBar = ()=>document.getElementById('miniProgBar');
+const _npTime  = ()=>document.getElementById('npTimeEl');
+const _npDur   = ()=>document.getElementById('npDurEl');
+let _fillEl=null,_thumbEl=null,_miniBarEl=null,_timeEl=null,_durEl=null;
+function _cacheAudioEls(){
+  _fillEl=document.getElementById('npProgBar');
+  _thumbEl=document.getElementById('npSeekThumb');
+  _miniBarEl=document.getElementById('miniProgBar');
+  _timeEl=document.getElementById('npTimeEl');
+  _durEl=document.getElementById('npDurEl');
 }
 
 audEl.addEventListener('timeupdate',()=>{
-  if(audEl.duration){
-    const pct=(audEl.currentTime/audEl.duration)*100;
-    // NP seek fill + thumb
-    const fill=document.getElementById('npProgBar');
-    const thumb=document.getElementById('npSeekThumb');
-    const miniBar=document.getElementById('miniProgBar');
-    if(fill){ fill.style.width=pct+'%'; }
-    if(thumb){ thumb.style.left=pct+'%'; }
-    if(miniBar){ miniBar.style.width=pct+'%'; }
-    // Time display
-    const tEl=document.getElementById('npTimeEl');
-    const dEl=document.getElementById('npDurEl');
-    if(tEl) tEl.textContent=ft(audEl.currentTime);
-    if(dEl) dEl.textContent=ft(audEl.duration);
-  }
-});
+  if(!audEl.duration) return;
+  const pct=(audEl.currentTime/audEl.duration)*100;
+  if(_fillEl)  _fillEl.style.width  = pct+'%';
+  if(_thumbEl) _thumbEl.style.left  = pct+'%';
+  if(_miniBarEl) _miniBarEl.style.width = pct+'%';
+  if(_timeEl) _timeEl.textContent = ft(audEl.currentTime);
+  if(_durEl)  _durEl.textContent  = ft(audEl.duration);
+},{passive:true});
 
 function npSeekClick(e){
   const track=document.getElementById('npSeekTrack');
